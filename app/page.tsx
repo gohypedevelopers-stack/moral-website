@@ -179,25 +179,27 @@ export default function Home() {
     let scrollLeft = 0;
     let hasMoved = false;
 
-    const handleMouseDown = (e: MouseEvent) => {
+    const handlePointerDown = (e: PointerEvent) => {
       isDown = true;
       rail.classList.add("dragging");
       startX = e.pageX - rail.offsetLeft;
       scrollLeft = rail.scrollLeft;
       hasMoved = false;
+      rail.setPointerCapture?.(e.pointerId);
     };
 
-    const handleMouseLeave = () => {
+    const handlePointerLeave = () => {
       isDown = false;
       rail.classList.remove("dragging");
     };
 
-    const handleMouseUp = () => {
+    const handlePointerUp = (e: PointerEvent) => {
       isDown = false;
       rail.classList.remove("dragging");
+      rail.releasePointerCapture?.(e.pointerId);
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handlePointerMove = (e: PointerEvent) => {
       if (!isDown) return;
       e.preventDefault();
       const x = e.pageX - rail.offsetLeft;
@@ -215,17 +217,19 @@ export default function Home() {
       }
     };
 
-    rail.addEventListener("mousedown", handleMouseDown);
-    rail.addEventListener("mouseleave", handleMouseLeave);
-    rail.addEventListener("mouseup", handleMouseUp);
-    rail.addEventListener("mousemove", handleMouseMove);
+    rail.addEventListener("pointerdown", handlePointerDown);
+    rail.addEventListener("pointerleave", handlePointerLeave);
+    rail.addEventListener("pointerup", handlePointerUp);
+    rail.addEventListener("pointercancel", handlePointerUp);
+    rail.addEventListener("pointermove", handlePointerMove);
     rail.addEventListener("click", handlePreventClick, true);
 
     return () => {
-      rail.removeEventListener("mousedown", handleMouseDown);
-      rail.removeEventListener("mouseleave", handleMouseLeave);
-      rail.removeEventListener("mouseup", handleMouseUp);
-      rail.removeEventListener("mousemove", handleMouseMove);
+      rail.removeEventListener("pointerdown", handlePointerDown);
+      rail.removeEventListener("pointerleave", handlePointerLeave);
+      rail.removeEventListener("pointerup", handlePointerUp);
+      rail.removeEventListener("pointercancel", handlePointerUp);
+      rail.removeEventListener("pointermove", handlePointerMove);
       rail.removeEventListener("click", handlePreventClick, true);
     };
   }, []);

@@ -650,12 +650,14 @@ image-slot {
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   user-select: none;
+  touch-action: pan-x;
+  cursor: grab;
 }
 
 .rail.dragging {
   scroll-snap-type: none;
   scroll-behavior: auto;
-  cursor: cursor;
+  cursor: grabbing;
 }
 
 .rail::-webkit-scrollbar {
@@ -685,6 +687,7 @@ image-slot {
   position: relative;
   aspect-ratio: 3 / 4;
   overflow: hidden;
+  pointer-events: none;
 }
 
 .card__tag,
