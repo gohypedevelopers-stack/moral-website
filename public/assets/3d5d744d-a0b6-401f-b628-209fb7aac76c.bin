@@ -1,0 +1,156 @@
+/* ============================================================
+   MORAL — scroll engine
+   rAF-batched parallax + hero wordmark assembly + reveals
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var root = document.documentElement;
+  var motion = function () {
+    var m = parseFloat(getComputedStyle(root).getPropertyValue('--motion'));
+    return isNaN(m) ? 0.6 : m;
+  };
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // phone / touch: disable heavy parallax for buttery scrolling
+  var isMobile = window.matchMedia('(max-width: 820px)').matches
+              || window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+  /* ---------- Loader dismissal ---------- */
+  var loader = document.getElementById('loader');
+  function hideLoader() {
+    if (!loader || loader.classList.contains('is-done')) return;
+    loader.classList.add('is-done');
+    setTimeout(function () { if (loader && loader.parentNode) loader.parentNode.removeChild(loader); }, 800);
+  }
+  if (loader) {
+    var shown = Date.now();
+    function dismiss() {
+      var wait = Math.max(0, 900 - (Date.now() - shown)); // min splash time
+      setTimeout(hideLoader, wait);
+    }
+    if (document.readyState === 'complete') dismiss();
+    else window.addEventListener('load', dismiss);
+    setTimeout(hideLoader, 5000); // hard fallback
+  }
+
+  /* ---------- NAV / mobile drawer ---------- */
+  var burger = document.getElementById('burger');
+  var body = document.body;
+  if (burger) {
+    burger.addEventListener('click', function () { body.classList.toggle('menu-open'); });
+  }
+  document.querySelectorAll('.drawer a').forEach(function (a) {
+    a.addEventListener('click', function () { body.classList.remove('menu-open'); });
+  });
+
+  /* ---------- Parallax targets ---------- */
+  var pxEls = (reduce || isMobile) ? [] : [].slice.call(document.querySelectorAll('[data-parallax]')).map(function (el) {
+    return { el: el, speed: parseFloat(el.getAttribute('data-parallax')) || 0 };
+  });
+
+  /* ---------- Hero (autoplay loop — no scroll-scrub, no parallax) ---------- */
+  var hero = document.getElementById('hero');
+  var heroTag = document.getElementById('heroTag');
+  var heroVideo = document.getElementById('heroVideo');
+  var wingR = document.getElementById('wingR');
+  var wingL = document.getElementById('wingL');
+
+  if (heroVideo) {
+    var tryPlay = function () { var p = heroVideo.play(); if (p && p.catch) p.catch(function () {}); };
+    heroVideo.addEventListener('loadeddata', tryPlay);
+    heroVideo.addEventListener('canplay', tryPlay);
+    tryPlay();
+  }
+
+  function updateHero(scrollY, vh) {
+    if (!hero || !heroTag) return;
+    var track = hero.offsetHeight - vh;
+    var p = track > 0 ? clamp(scrollY / track, 0, 1) : 0;
+    heroTag.style.opacity = (1 - clamp(p / 0.4, 0, 1)).toFixed(2);
+  }
+
+  /* ---------- Winged crest flap (scroll-driven) ---------- */
+  function updateWings(scrollY) {
+    if (!wingR && !wingL) return;
+    var m = motion();
+    // one full wingbeat per ~260px of scroll; eased oscillation
+    var phase = scrollY / 260;
+    var ang = Math.sin(phase * Math.PI) * 13 * (0.35 + 0.65 * m);
+    // halves pivot at the shared root: left dips +ang, right mirrors -ang
+    if (wingL) wingL.style.transform = 'rotate(' + ang.toFixed(2) + 'deg)';
+    if (wingR) wingR.style.transform = 'rotate(' + (-ang).toFixed(2) + 'deg)';
+  }
+
+  /* ---------- main render loop (rAF-gated to scroll) ---------- */
+  var ticking = false;
+  function render() {
+    var scrollY = window.pageYOffset;
+    var vh = window.innerHeight;
+    var vc = vh / 2;
+    var m = motion();
+
+    for (var i = 0; i < pxEls.length; i++) {
+      var item = pxEls[i];
+      var rect = item.el.getBoundingClientRect();
+      if (rect.bottom < -200 || rect.top > vh + 200) continue; // offscreen skip
+      var center = rect.top + rect.height / 2;
+      var dist = center - vc;
+      var ty = dist * item.speed * m;
+      item.el.style.transform = 'translate3d(0,' + ty.toFixed(2) + 'px,0)';
+    }
+
+    updateHero(scrollY, vh);
+    updateWings(scrollY);
+    ticking = false;
+  }
+  function kick() {
+    if (!ticking) { ticking = true; requestAnimationFrame(render); }
+  }
+  window.addEventListener('scroll', kick, { passive: true });
+  window.addEventListener('resize', kick);
+  kick();
+
+  /* ---------- Intersection reveals ---------- */
+  if (!reduce && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+    // brand statement line-by-line
+    var stmt = document.getElementById('statement');
+    if (stmt) {
+      var sio = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('in'); sio.unobserve(e.target); }
+        });
+      }, { threshold: 0.4 });
+      sio.observe(stmt);
+    }
+  } else {
+    document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+    var s2 = document.getElementById('statement'); if (s2) s2.classList.add('in');
+  }
+
+  /* ---------- Newsletter ---------- */
+  var form = document.getElementById('newsForm');
+  var msg = document.getElementById('newsMsg');
+  if (form) {
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      msg.classList.add('show');
+      form.reset();
+      setTimeout(function () { msg.classList.remove('show'); }, 3500);
+    });
+  }
+
+  /* ---------- Nav hide on scroll-down (subtle) ---------- */
+  // (kept minimal for performance — difference blend keeps it legible)
+})();

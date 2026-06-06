@@ -1,0 +1,65 @@
+/* global React, ReactDOM, useTweaks, TweaksPanel, TweakSection, TweakSlider, TweakRadio, TweakColor */
+
+const MORAL_TWEAKS = /*EDITMODE-BEGIN*/{
+  "displayFont": "Cormorant Garamond",
+  "accent": "Mono",
+  "motion": 60
+}/*EDITMODE-END*/;
+
+const FONT_MAP = {
+  "Cormorant Garamond": "'Cormorant Garamond', Georgia, serif",
+  "Bodoni Moda": "'Bodoni Moda', 'Cormorant Garamond', serif",
+  "Playfair Display": "'Playfair Display', Georgia, serif"
+};
+
+const ACCENT_MAP = {
+  "Mono": "inherit",
+  "Gold": "#c4963c",
+  "Burgundy": "#822634",
+  "Crimson": "#b4231f"
+};
+
+function MoralTweaks() {
+  const [t, setTweak] = useTweaks(MORAL_TWEAKS);
+  const r = document.documentElement;
+
+  React.useEffect(() => {
+    r.style.setProperty('--font-display', FONT_MAP[t.displayFont] || FONT_MAP["Cormorant Garamond"]);
+  }, [t.displayFont]);
+
+  React.useEffect(() => {
+    r.style.setProperty('--accent', ACCENT_MAP[t.accent] || 'inherit');
+  }, [t.accent]);
+
+  React.useEffect(() => {
+    r.style.setProperty('--motion', (t.motion / 100).toFixed(2));
+  }, [t.motion]);
+
+  return (
+    <TweaksPanel>
+      <TweakSection label="Typography" />
+      <TweakRadio
+        label="Display serif"
+        value={t.displayFont}
+        options={["Cormorant Garamond", "Bodoni Moda", "Playfair Display"]}
+        onChange={(v) => setTweak('displayFont', v)}
+      />
+      <TweakSection label="Accent" />
+      <TweakRadio
+        label="Emphasis color"
+        value={t.accent}
+        options={["Mono", "Gold", "Burgundy", "Crimson"]}
+        onChange={(v) => setTweak('accent', v)}
+      />
+      <TweakSection label="Motion" />
+      <TweakSlider
+        label="Animation intensity"
+        value={t.motion}
+        min={0} max={100} step={10} unit="%"
+        onChange={(v) => setTweak('motion', v)}
+      />
+    </TweaksPanel>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<MoralTweaks />);
