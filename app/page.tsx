@@ -44,6 +44,39 @@ const products = [
   },
 ];
 
+const allProducts = [
+  {
+    id: "aprod-1",
+    tag: "Essential",
+    title: "Minimalist Trench Coat",
+    sub: "Outerwear",
+    price: "$720",
+    src: "https://images.unsplash.com/photo-1619603364904-c0498317e145?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGNsb3RoaW5nfGVufDB8MXwwfHx8Mg%3D%3D",
+  },
+  {
+    id: "aprod-2",
+    title: "Silk Ribbed Knit",
+    sub: "Knitwear",
+    price: "$280",
+    src: "https://images.unsplash.com/photo-1600950207944-0d63e8edbc3f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fGNsb3RoaW5nfGVufDB8MXwwfHx8Mg%3D%3D",
+  },
+  {
+    id: "aprod-3",
+    tag: "New",
+    title: "Tailored Pleated Pants",
+    sub: "Tailoring",
+    price: "$340",
+    src: "https://images.unsplash.com/photo-1617019114583-affb34d1b3cd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjV8fGNsb3RoaW5nfGVufDB8MXwwfHx8Mg%3D%3D",
+  },
+  {
+    id: "aprod-4",
+    title: "Raw Denim Overshirt",
+    sub: "Denim",
+    price: "$310",
+    src: "https://images.unsplash.com/photo-1666932521131-d990bd263a2c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzB8fGNsb3RoaW5nfGVufDB8MXwwfHx8Mg%3D%3D",
+  },
+];
+
 const categories = [
   {
     id: "cat-men",
@@ -127,7 +160,6 @@ const features = [
 ];
 
 export default function Home() {
-  const [loaderDone, setLoaderDone] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [newsSubmitted, setNewsSubmitted] = useState(false);
 
@@ -136,6 +168,67 @@ export default function Home() {
   const wingRRef = useRef<HTMLImageElement>(null);
   const heroTagRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
+  const railRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+    let hasMoved = false;
+
+    const handleMouseDown = (e: MouseEvent) => {
+      isDown = true;
+      rail.classList.add("dragging");
+      startX = e.pageX - rail.offsetLeft;
+      scrollLeft = rail.scrollLeft;
+      hasMoved = false;
+    };
+
+    const handleMouseLeave = () => {
+      isDown = false;
+      rail.classList.remove("dragging");
+    };
+
+    const handleMouseUp = () => {
+      isDown = false;
+      rail.classList.remove("dragging");
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - rail.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      if (Math.abs(walk) > 4) {
+        hasMoved = true;
+      }
+      rail.scrollLeft = scrollLeft - walk;
+    };
+
+    const handlePreventClick = (e: MouseEvent) => {
+      if (hasMoved) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    rail.addEventListener("mousedown", handleMouseDown);
+    rail.addEventListener("mouseleave", handleMouseLeave);
+    rail.addEventListener("mouseup", handleMouseUp);
+    rail.addEventListener("mousemove", handleMouseMove);
+    rail.addEventListener("click", handlePreventClick, true);
+
+    return () => {
+      rail.removeEventListener("mousedown", handleMouseDown);
+      rail.removeEventListener("mouseleave", handleMouseLeave);
+      rail.removeEventListener("mouseup", handleMouseUp);
+      rail.removeEventListener("mousemove", handleMouseMove);
+      rail.removeEventListener("click", handlePreventClick, true);
+    };
+  }, []);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -143,8 +236,6 @@ export default function Home() {
     script.async = true;
     document.body.appendChild(script);
 
-    const timer = setTimeout(() => setLoaderDone(true), 900);
-    const fallback = setTimeout(() => setLoaderDone(true), 5000);
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isMobile =
       window.matchMedia("(max-width: 820px)").matches ||
@@ -268,8 +359,6 @@ export default function Home() {
     heroVideoRef.current?.play().catch(() => {});
 
     return () => {
-      clearTimeout(timer);
-      clearTimeout(fallback);
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
       if (rafId) cancelAnimationFrame(rafId);
@@ -293,15 +382,6 @@ export default function Home() {
 
   return (
     <>
-      <div className={`loader${loaderDone ? " is-done" : ""}`} id="loader" aria-hidden="true">
-        <div className="loader__inner">
-          <img className="loader__wings" src="/assets/29008569-0b5f-48a4-a3f7-d83c8c21af85.png" alt="" />
-          <span className="loader__word">MORAL</span>
-          <span className="loader__bar">
-            <i />
-          </span>
-        </div>
-      </div>
 
       <div className="stage" aria-hidden="true">
         <div className="stage__black" />
@@ -366,14 +446,10 @@ export default function Home() {
               <source src="/assets/c54951d7-bc3c-4898-b859-5d97527fd8bf.mp4" type="video/mp4" />
             </video>
             <div className="hero__veil" />
-            <div ref={heroTagRef} className="hero__tag" id="heroTag">
+            <div ref={heroTagRef} className="hero__scroll-indicator" id="heroTag">
               <span className="label">More Than Clothing</span>
-            </div>
-            <div className="hero__scroll">
               <span className="line" />
-              <span className="label" style={{ letterSpacing: "0.3em", fontSize: "0.6rem" }}>
-                Scroll
-              </span>
+              <span className="label scroll-label">Scroll</span>
             </div>
           </div>
         </section>
@@ -382,14 +458,11 @@ export default function Home() {
           <div className="split__grid">
             <div className="split__left">
               <div className="glyphfield" id="glyphfield">
-                <span className="glyph" style={{ top: "8%", left: "10%", fontSize: "5.5rem", opacity: 0.22 }} data-parallax="0.25">M</span>
-                <span className="glyph" style={{ top: "62%", left: "6%", fontSize: "8.5rem", opacity: 0.18 }} data-parallax="-0.3">L</span>
-                <span className="glyph" style={{ top: "24%", right: "8%", fontSize: "4.5rem", opacity: 0.25 }} data-parallax="0.4">R</span>
-                <span className="glyph" style={{ bottom: "10%", right: "14%", fontSize: "6.5rem", opacity: 0.18 }} data-parallax="-0.2">O</span>
+                <span className="glyph" style={{ top: "12%", left: "10%", fontSize: "5.5rem", opacity: 0.22 }} data-parallax="0.25">M</span>
+                <span className="glyph" style={{ top: "14%", right: "12%", fontSize: "6.5rem", opacity: 0.18 }} data-parallax="-0.15">O</span>
+                <span className="glyph" style={{ top: "58%", left: "8%", fontSize: "8.5rem", opacity: 0.2 }} data-parallax="-0.3">R</span>
+                <span className="glyph" style={{ top: "70%", right: "10%", fontSize: "5rem", opacity: 0.25 }} data-parallax="0.35">L</span>
               </div>
-              <span className="split__mark reveal" data-parallax="0.08">
-                M
-              </span>
             </div>
             <div className="split__right">
               <div className="split__block reveal">
@@ -432,7 +505,7 @@ export default function Home() {
             </div>
             <span className="label rail__hint">Drag → to explore</span>
           </div>
-          <div className="rail" id="rail">
+          <div className="rail" id="rail" ref={railRef}>
             <div className="rail__spacer" />
             {products.map((product) => (
               <article key={product.id} className="card">
@@ -504,6 +577,62 @@ export default function Home() {
                 <p>{feature.copy}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        <section className="all-products" id="all-products" data-screen-label="All Products">
+          <div className="collection__head reveal">
+            <div>
+              <span className="label">The Archive · Permanent Collection</span>
+              <h2>
+                All <span className="italic serif">Products</span>
+              </h2>
+            </div>
+          </div>
+          <div className="all-products__grid">
+            {allProducts.map((product) => (
+              <article key={product.id} className="card">
+                <div className="card__media">
+                  {product.tag ? <span className="card__tag">{product.tag}</span> : null}
+                  <image-slot id={product.id} className="filled-stock" src={product.src} placeholder={product.title}></image-slot>
+                </div>
+                <div className="card__meta">
+                  <div>
+                    <h4>{product.title}</h4>
+                    <span className="sub">{product.sub}</span>
+                  </div>
+                  <span className="price">{product.price}</span>
+                </div>
+                <button className="card__atc" aria-label={`Add ${product.title} to cart`}>
+                  Add to Cart
+                </button>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="marquee" id="marquee" data-screen-label="Marquee" aria-hidden="true">
+          <div className="marquee__track">
+            <div className="marquee__content">
+              <span>Integrity</span>
+              <span className="sep">✦</span>
+              <span>Craft</span>
+              <span className="sep">✦</span>
+              <span>Permanence</span>
+              <span className="sep">✦</span>
+              <span>Conscience</span>
+              <span className="sep">✦</span>
+            </div>
+            <div className="marquee__content" aria-hidden="true">
+              <span>Integrity</span>
+              <span className="sep">✦</span>
+              <span>Craft</span>
+              <span className="sep">✦</span>
+              <span>Permanence</span>
+              <span className="sep">✦</span>
+              <span>Conscience</span>
+              <span className="sep">✦</span>
+            </div>
           </div>
         </section>
 

@@ -395,7 +395,7 @@ body.menu-open .drawer a:nth-child(5) { transition-delay: 0.42s; }
 
 .hero {
   position: relative;
-  background: var(--ink);
+  background: #000;
 }
 
 .hero__sticky {
@@ -417,7 +417,7 @@ image-slot {
   position: absolute;
   inset: 0;
   object-fit: contain;
-  background: var(--ink);
+  background: #000;
 }
 
 .hero__veil,
@@ -430,34 +430,32 @@ image-slot {
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.5));
 }
 
-.hero__tag,
-.hero__scroll {
+.hero__scroll-indicator {
   position: absolute;
+  bottom: clamp(2rem, 6vh, 4.5rem);
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
-}
-
-.hero__tag {
-  bottom: clamp(2.5rem, 9vh, 7rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
   text-align: center;
   color: rgba(239, 236, 228, 0.82);
 }
 
-.hero__scroll {
-  bottom: 1.6rem;
-  color: rgba(239, 236, 228, 0.6);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.6rem;
+.hero__scroll-indicator .line {
+  width: 1px;
+  height: 48px;
+  background: currentColor;
+  opacity: 0.55;
+  animation: scrollLine 2.4s var(--ease) infinite;
 }
 
-.hero__scroll .line {
-  width: 1px;
-  height: 46px;
-  background: currentColor;
-  animation: scrollLine 2.4s var(--ease) infinite;
+.hero__scroll-indicator .scroll-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.3em;
+  opacity: 0.65;
 }
 
 .split__grid,
@@ -615,6 +613,13 @@ image-slot {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
+  user-select: none;
+}
+
+.rail.dragging {
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+  cursor: cursor;
 }
 
 .rail::-webkit-scrollbar {
@@ -693,6 +698,7 @@ image-slot {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   opacity: 0.6;
+  white-space: nowrap;
 }
 
 .card__atc {
@@ -717,7 +723,7 @@ image-slot {
 }
 
 .statement {
-  padding: clamp(1rem, 3vw, 2.5rem) var(--pad-x) clamp(6rem, 15vw, 12rem);
+  padding: clamp(1rem, 3vw, 2.5rem) var(--pad-x) clamp(2rem, 5vw, 4rem);
   color: #fff;
   mix-blend-mode: difference;
   overflow: hidden;
@@ -729,13 +735,15 @@ image-slot {
 }
 
 .statement h2 {
-  font-size: var(--fs-mega);
+  font-size: clamp(3.2rem, 13.5vw, 13rem);
   line-height: 0.92;
 }
 
 .reveal-line {
   display: block;
   overflow: hidden;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
 }
 
 .reveal-line > span {
@@ -805,7 +813,7 @@ image-slot {
 }
 
 .why {
-  padding-inline: var(--pad-x);
+  padding: 0 var(--pad-x) 0;
 }
 
 .why__head {
@@ -837,7 +845,7 @@ image-slot {
 
 .feature__icon {
   height: 56px;
-  margin: 1.4rem 0 1.8rem;
+  margin: 1rem 0 0.8rem;
   display: flex;
   align-items: center;
 }
@@ -845,6 +853,63 @@ image-slot {
 .feature__icon svg {
   width: 46px;
   height: 46px;
+}
+
+.marquee {
+  padding: clamp(4rem, 8vw, 6rem) 0;
+  overflow: hidden;
+  color: #fff;
+  mix-blend-mode: difference;
+  user-select: none;
+  pointer-events: none;
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+}
+
+.marquee__content {
+  display: flex;
+  align-items: center;
+  gap: clamp(2rem, 5vw, 4rem);
+  padding-right: clamp(2rem, 5vw, 4rem);
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 8vw, 6rem);
+  text-transform: uppercase;
+  white-space: nowrap;
+  animation: marqueeScroll 25s linear infinite;
+}
+
+.marquee__content span {
+  display: inline-block;
+}
+
+.marquee__content .sep {
+  opacity: 0.35;
+}
+
+@keyframes marqueeScroll {
+  to {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+.all-products {
+  padding: var(--section-y) var(--pad-x);
+}
+
+.all-products h2,
+.all-products .label {
+  color: #fff;
+  mix-blend-mode: difference;
+}
+
+.all-products__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(1rem, 2.5vw, 2rem);
+  margin-top: clamp(2rem, 5vw, 3.5rem);
 }
 
 .campaign {
@@ -947,7 +1012,7 @@ image-slot {
 }
 
 .news {
-  padding-inline: var(--pad-x);
+  padding: 0 var(--pad-x) var(--section-y);
   text-align: center;
 }
 
@@ -1171,6 +1236,10 @@ image-slot.filled-stock::part(image) {
   .footer__brand {
     grid-column: 1 / -1;
   }
+
+  .all-products__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 560px) {
@@ -1178,6 +1247,16 @@ image-slot.filled-stock::part(image) {
   .cats__grid,
   .footer__top {
     grid-template-columns: 1fr;
+  }
+
+  .cats__grid {
+    justify-items: center;
+    gap: 1.5rem;
+  }
+
+  .cat {
+    width: 90%;
+    max-width: 340px;
   }
 
   .feature {
@@ -1195,6 +1274,16 @@ image-slot.filled-stock::part(image) {
 
   .card {
     width: 46vw;
+  }
+
+  .all-products__grid {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .all-products__grid .card {
+    width: 100%;
+    max-width: 340px;
   }
 
   .rail__hint {
