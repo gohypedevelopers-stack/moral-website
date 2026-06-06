@@ -535,6 +535,13 @@ image-slot {
   color: #fff;
   mix-blend-mode: difference;
   opacity: 0;
+  transform: scale(0.9) translate3d(0, 15px, 0);
+  transition: opacity 1.5s var(--ease), transform 1.5s var(--ease);
+}
+
+.split__mark.in {
+  opacity: 0.16;
+  transform: scale(1) translate3d(0, 0, 0);
 }
 
 .split__block {
@@ -616,7 +623,13 @@ image-slot {
 
 .card {
   flex: 0 0 auto;
-  width: min(78vw, 30rem);
+  width: min(60vw, 22rem);
+  scroll-snap-align: start;
+}
+
+.rail__spacer {
+  flex: 0 0 auto;
+  width: var(--pad-x);
   scroll-snap-align: start;
 }
 
@@ -657,6 +670,21 @@ image-slot {
   justify-content: space-between;
   gap: 1rem;
   padding-top: 1rem;
+  color: #fff;
+  mix-blend-mode: difference;
+}
+
+.card__meta > div {
+  min-width: 0;
+  flex: 1;
+}
+
+.card__meta h4 {
+  font-size: clamp(0.95rem, 3.2vw, 1.25rem);
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card__meta .sub,
@@ -667,8 +695,29 @@ image-slot {
   opacity: 0.6;
 }
 
+.card__atc {
+  display: block;
+  width: 100%;
+  margin-top: 0.8rem;
+  padding: 0.65rem;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  font-size: var(--fs-label);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-align: center;
+  transition: background 0.3s var(--ease), color 0.3s var(--ease);
+  color: #fff;
+  mix-blend-mode: difference;
+}
+
+.card__atc:hover {
+  background: #fff;
+  color: #000;
+}
+
 .statement {
-  padding: clamp(7rem, 18vw, 16rem) var(--pad-x);
+  padding: clamp(1rem, 3vw, 2.5rem) var(--pad-x) clamp(6rem, 15vw, 12rem);
   color: #fff;
   mix-blend-mode: difference;
   overflow: hidden;
@@ -924,6 +973,7 @@ image-slot {
   flex: 1;
   background: none;
   border: 0;
+  outline: none;
   color: inherit;
   padding: 1rem 0.2rem;
   letter-spacing: 0.04em;
@@ -1037,6 +1087,12 @@ image-slot::part(empty) {
 
 image-slot.filled-stock::part(image) {
   filter: grayscale(1) contrast(1.06) brightness(0.96);
+  transition: filter 0.5s var(--ease);
+}
+
+.card:hover image-slot.filled-stock::part(image),
+.cat:hover image-slot.filled-stock::part(image) {
+  filter: grayscale(0) contrast(1) brightness(1);
 }
 
 @keyframes loaderFloat {
@@ -1138,7 +1194,7 @@ image-slot.filled-stock::part(image) {
   }
 
   .card {
-    width: 74vw;
+    width: 46vw;
   }
 
   .rail__hint {

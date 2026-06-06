@@ -210,11 +210,14 @@ export default function Home() {
       // Smooth interpolation (lerp)
       currentScroll += (targetScroll - currentScroll) * 0.08;
 
+      // Check if phone view to reduce gap separation and rotation range
+      const isPhone = window.innerWidth < 600;
+
       // Calculate flap angle and translation based on the smoothed scroll position
       const phase = currentScroll * 0.006; // control speed of flap relative to scroll
-      const angle = Math.sin(phase) * 16;  // flap angle range
-      const driftX = Math.sin(phase) * 6;  // side to side movement
-      const driftY = Math.cos(phase * 0.8) * 8; // vertical bounce
+      const angle = Math.sin(phase) * (isPhone ? 5 : 11);  // flap angle range
+      const driftX = Math.sin(phase) * (isPhone ? 0.2 : 1.2);   // side to side movement (reduced gap)
+      const driftY = Math.cos(phase * 0.8) * (isPhone ? 1.5 : 5); // vertical bounce
 
       if (wingLRef.current) {
         wingLRef.current.style.transform =
@@ -379,12 +382,12 @@ export default function Home() {
           <div className="split__grid">
             <div className="split__left">
               <div className="glyphfield" id="glyphfield">
-                <span className="glyph" style={{ top: "8%", left: "10%", fontSize: "5rem", opacity: 0.06 }} data-parallax="0.25">M</span>
-                <span className="glyph" style={{ top: "62%", left: "6%", fontSize: "8rem", opacity: 0.05 }} data-parallax="-0.3">L</span>
-                <span className="glyph" style={{ top: "24%", right: "8%", fontSize: "4rem", opacity: 0.07 }} data-parallax="0.4">R</span>
-                <span className="glyph" style={{ bottom: "10%", right: "14%", fontSize: "6rem", opacity: 0.05 }} data-parallax="-0.2">O</span>
+                <span className="glyph" style={{ top: "8%", left: "10%", fontSize: "5.5rem", opacity: 0.22 }} data-parallax="0.25">M</span>
+                <span className="glyph" style={{ top: "62%", left: "6%", fontSize: "8.5rem", opacity: 0.18 }} data-parallax="-0.3">L</span>
+                <span className="glyph" style={{ top: "24%", right: "8%", fontSize: "4.5rem", opacity: 0.25 }} data-parallax="0.4">R</span>
+                <span className="glyph" style={{ bottom: "10%", right: "14%", fontSize: "6.5rem", opacity: 0.18 }} data-parallax="-0.2">O</span>
               </div>
-              <span className="split__mark" data-parallax="0.08">
+              <span className="split__mark reveal" data-parallax="0.08">
                 M
               </span>
             </div>
@@ -430,6 +433,7 @@ export default function Home() {
             <span className="label rail__hint">Drag → to explore</span>
           </div>
           <div className="rail" id="rail">
+            <div className="rail__spacer" />
             {products.map((product) => (
               <article key={product.id} className="card">
                 <div className="card__media">
@@ -443,6 +447,9 @@ export default function Home() {
                   </div>
                   <span className="price">{product.price}</span>
                 </div>
+                <button className="card__atc" aria-label={`Add ${product.title} to cart`}>
+                  Add to Cart
+                </button>
               </article>
             ))}
           </div>
