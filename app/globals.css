@@ -469,7 +469,7 @@ image-slot {
 
 .split__left,
 .split__right {
-  min-height: 100vh;
+  min-height: 78vh;
 }
 
 .split__left {
@@ -524,6 +524,42 @@ image-slot {
   color: #fff;
   line-height: 1;
   will-change: transform;
+}
+
+.glyph--m {
+  top: 12%;
+  left: 10%;
+  font-size: clamp(5rem, 10vw, 8rem);
+  opacity: 0.22;
+}
+
+.glyph--o {
+  top: 13%;
+  right: 10%;
+  font-size: clamp(5.4rem, 11vw, 9rem);
+  opacity: 0.18;
+}
+
+.glyph--r {
+  bottom: 16%;
+  left: 8%;
+  font-size: clamp(7rem, 14vw, 11rem);
+  opacity: 0.2;
+}
+
+.glyph--a {
+  top: 50%;
+  left: 50%;
+  font-size: clamp(5.8rem, 12vw, 9.5rem);
+  opacity: 0.14;
+  transform: translate(-50%, -50%);
+}
+
+.glyph--l {
+  right: 10%;
+  bottom: 12%;
+  font-size: clamp(4.6rem, 9vw, 7rem);
+  opacity: 0.25;
 }
 
 .split__mark {
@@ -1204,7 +1240,38 @@ image-slot.filled-stock::part(image) {
   }
 
   .split__left {
-    min-height: 44vh;
+    min-height: 68svh;
+  }
+
+  .glyph--m {
+    top: 17%;
+    left: 16%;
+    font-size: clamp(3.2rem, 13vw, 4.3rem);
+  }
+
+  .glyph--o {
+    top: 28%;
+    right: 15%;
+    font-size: clamp(3.4rem, 13.5vw, 4.5rem);
+  }
+
+  .glyph--r {
+    left: 15%;
+    bottom: 24%;
+    font-size: clamp(4rem, 15.5vw, 5.2rem);
+  }
+
+  .glyph--a {
+    top: 56%;
+    left: 50%;
+    font-size: clamp(3.6rem, 14vw, 4.8rem);
+    opacity: 0.12;
+  }
+
+  .glyph--l {
+    right: 18%;
+    bottom: 22%;
+    font-size: clamp(3rem, 12vw, 4rem);
   }
 
   .split__right {
@@ -1273,7 +1340,7 @@ image-slot.filled-stock::part(image) {
   }
 
   .card {
-    width: 46vw;
+    width: min(78vw, 320px);
   }
 
   .all-products__grid {

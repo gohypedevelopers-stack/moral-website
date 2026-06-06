@@ -454,45 +454,6 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="split" id="philosophy" data-screen-label="Philosophy">
-          <div className="split__grid">
-            <div className="split__left">
-              <div className="glyphfield" id="glyphfield">
-                <span className="glyph" style={{ top: "12%", left: "10%", fontSize: "5.5rem", opacity: 0.22 }} data-parallax="0.25">M</span>
-                <span className="glyph" style={{ top: "14%", right: "12%", fontSize: "6.5rem", opacity: 0.18 }} data-parallax="-0.15">O</span>
-                <span className="glyph" style={{ top: "58%", left: "8%", fontSize: "8.5rem", opacity: 0.2 }} data-parallax="-0.3">R</span>
-                <span className="glyph" style={{ top: "70%", right: "10%", fontSize: "5rem", opacity: 0.25 }} data-parallax="0.35">L</span>
-              </div>
-            </div>
-            <div className="split__right">
-              <div className="split__block reveal">
-                <span className="label">The Story</span>
-                <h3>
-                  Founded on a single conviction —
-                  <span className="italic"> that what we wear should mean something.</span>
-                </h3>
-                <p>
-                  A quiet rebellion against the disposable. Garments built to be kept, considered,
-                  and worn with intention.
-                </p>
-              </div>
-              <div className="split__block reveal" data-d="1">
-                <span className="label">The Philosophy</span>
-                <h3>Restraint as luxury.</h3>
-                <p>Designed for permanence, not the season. Less, considered more deeply.</p>
-              </div>
-              <div className="split__block reveal" data-d="2">
-                <span className="label">Core Values</span>
-                <div className="values">
-                  {["Integrity", "Craft", "Permanence", "Conscience"].map((value) => (
-                    <span key={value}>{value}</span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
         <section className="collection" id="collection" data-screen-label="Collection">
           <div className="collection__head reveal">
             <div>
@@ -697,6 +658,46 @@ export default function Home() {
             </div>
             <div className={`news__msg${newsSubmitted ? " show" : ""}`} id="newsMsg">
               Welcome to MORAL.
+            </div>
+          </div>
+        </section>
+
+        <section className="split" id="philosophy" data-screen-label="Philosophy">
+          <div className="split__grid">
+            <div className="split__left">
+              <div className="glyphfield" id="glyphfield">
+                <span className="glyph glyph--m" data-parallax="0.25">M</span>
+                <span className="glyph glyph--o" data-parallax="-0.15">O</span>
+                <span className="glyph glyph--r" data-parallax="-0.3">R</span>
+                <span className="glyph glyph--a">A</span>
+                <span className="glyph glyph--l" data-parallax="0.35">L</span>
+              </div>
+            </div>
+            <div className="split__right">
+              <div className="split__block reveal">
+                <span className="label">The Story</span>
+                <h3>
+                  Founded on a single conviction —
+                  <span className="italic"> that what we wear should mean something.</span>
+                </h3>
+                <p>
+                  A quiet rebellion against the disposable. Garments built to be kept, considered,
+                  and worn with intention.
+                </p>
+              </div>
+              <div className="split__block reveal" data-d="1">
+                <span className="label">The Philosophy</span>
+                <h3>Restraint as luxury.</h3>
+                <p>Designed for permanence, not the season. Less, considered more deeply.</p>
+              </div>
+              <div className="split__block reveal" data-d="2">
+                <span className="label">Core Values</span>
+                <div className="values">
+                  {["Integrity", "Craft", "Permanence", "Conscience"].map((value) => (
+                    <span key={value}>{value}</span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </section>
