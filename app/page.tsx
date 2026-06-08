@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 
 const products = [
   {
@@ -160,7 +161,6 @@ const features = [
 ];
 
 export default function Home() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [newsSubmitted, setNewsSubmitted] = useState(false);
 
   const heroVideoRef = useRef<HTMLVideoElement>(null);
@@ -185,7 +185,6 @@ export default function Home() {
       startX = e.pageX - rail.offsetLeft;
       scrollLeft = rail.scrollLeft;
       hasMoved = false;
-      rail.setPointerCapture?.(e.pointerId);
     };
 
     const handlePointerLeave = () => {
@@ -196,18 +195,27 @@ export default function Home() {
     const handlePointerUp = (e: PointerEvent) => {
       isDown = false;
       rail.classList.remove("dragging");
-      rail.releasePointerCapture?.(e.pointerId);
+      try {
+        if (rail.hasPointerCapture?.(e.pointerId)) {
+          rail.releasePointerCapture?.(e.pointerId);
+        }
+      } catch (err) {}
     };
 
     const handlePointerMove = (e: PointerEvent) => {
       if (!isDown) return;
-      e.preventDefault();
       const x = e.pageX - rail.offsetLeft;
       const walk = (x - startX) * 1.5;
       if (Math.abs(walk) > 4) {
-        hasMoved = true;
+        if (!hasMoved) {
+          hasMoved = true;
+          try {
+            rail.setPointerCapture?.(e.pointerId);
+          } catch (err) {}
+        }
+        e.preventDefault();
+        rail.scrollLeft = scrollLeft - walk;
       }
-      rail.scrollLeft = scrollLeft - walk;
     };
 
     const handlePreventClick = (e: MouseEvent) => {
@@ -372,10 +380,7 @@ export default function Home() {
     };
   }, []);
 
-  useEffect(() => {
-    document.body.classList.toggle("menu-open", menuOpen);
-    return () => document.body.classList.remove("menu-open");
-  }, [menuOpen]);
+
 
   const handleNewsSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -400,38 +405,7 @@ export default function Home() {
         </div>
       </div>
 
-      <header className="nav" id="nav">
-        <a className="nav__brand" href="#top" aria-label="MORAL">
-          <img className="nav__logo" src="/assets/81783374-d384-4d9a-9e94-6c2b3eeef1aa.png" alt="MORAL" />
-        </a>
-        <nav className="nav__links">
-          <a href="#collection">Shop</a>
-          <a href="#philosophy">About</a>
-          <a href="#campaign">Campaign</a>
-          <a href="#community">Journal</a>
-        </nav>
-        <div className="nav__right">
-          <a className="nav__cart" href="#">
-            Cart (0)
-          </a>
-          <button className="burger" id="burger" aria-label="Menu" onClick={() => setMenuOpen((v) => !v)}>
-            <span />
-            <span />
-          </button>
-        </div>
-      </header>
 
-      <div className="drawer" id="drawer">
-        {["collection", "philosophy", "campaign", "community", "news"].map((id, index) => (
-          <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)}>
-            {["Shop", "About", "Campaign", "Journal", "Newsletter"][index]}
-          </a>
-        ))}
-        <div className="drawer__foot">
-          <span>Est. MMXXV</span>
-          <span>Instagram</span>
-        </div>
-      </div>
 
       <main id="top">
         <section ref={heroRef} className="hero" id="hero" data-screen-label="Hero">
@@ -447,7 +421,7 @@ export default function Home() {
               preload="auto"
               poster="/assets/986cede8-697d-415b-95e4-c54ffff14fa5.png"
             >
-              <source src="/assets/c54951d7-bc3c-4898-b859-5d97527fd8bf.mp4" type="video/mp4" />
+              <source src="Moral 1x.mp4" type="video/mp4" />
             </video>
             <div className="hero__veil" />
             <div ref={heroTagRef} className="hero__scroll-indicator" id="heroTag">
@@ -474,17 +448,19 @@ export default function Home() {
             <div className="rail__spacer" />
             {products.map((product) => (
               <article key={product.id} className="card">
-                <div className="card__media">
-                  {product.tag ? <span className="card__tag">{product.tag}</span> : null}
-                  <image-slot id={product.id} className="filled-stock" src={product.src} placeholder={product.title}></image-slot>
-                </div>
-                <div className="card__meta">
-                  <div>
-                    <h4>{product.title}</h4>
-                    <span className="sub">{product.sub}</span>
+                <Link href={`/product/${product.id}`} className="card__link">
+                  <div className="card__media">
+                    {product.tag ? <span className="card__tag">{product.tag}</span> : null}
+                    <image-slot id={product.id} className="filled-stock" src={product.src} placeholder={product.title}></image-slot>
                   </div>
-                  <span className="price">{product.price}</span>
-                </div>
+                  <div className="card__meta">
+                    <div>
+                      <h4>{product.title}</h4>
+                      <span className="sub">{product.sub}</span>
+                    </div>
+                    <span className="price">{product.price}</span>
+                  </div>
+                </Link>
                 <button className="card__atc" aria-label={`Add ${product.title} to cart`}>
                   Add to Cart
                 </button>
@@ -557,17 +533,19 @@ export default function Home() {
           <div className="all-products__grid">
             {allProducts.map((product) => (
               <article key={product.id} className="card">
-                <div className="card__media">
-                  {product.tag ? <span className="card__tag">{product.tag}</span> : null}
-                  <image-slot id={product.id} className="filled-stock" src={product.src} placeholder={product.title}></image-slot>
-                </div>
-                <div className="card__meta">
-                  <div>
-                    <h4>{product.title}</h4>
-                    <span className="sub">{product.sub}</span>
+                <Link href={`/product/${product.id}`} className="card__link">
+                  <div className="card__media">
+                    {product.tag ? <span className="card__tag">{product.tag}</span> : null}
+                    <image-slot id={product.id} className="filled-stock" src={product.src} placeholder={product.title}></image-slot>
                   </div>
-                  <span className="price">{product.price}</span>
-                </div>
+                  <div className="card__meta">
+                    <div>
+                      <h4>{product.title}</h4>
+                      <span className="sub">{product.sub}</span>
+                    </div>
+                    <span className="price">{product.price}</span>
+                  </div>
+                </Link>
                 <button className="card__atc" aria-label={`Add ${product.title} to cart`}>
                   Add to Cart
                 </button>
