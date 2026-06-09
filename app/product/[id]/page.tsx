@@ -1,4 +1,6 @@
 import Link from "next/link";
+import ProductSizePicker from "@/components/ProductSizePicker";
+import SiteFooter from "@/components/SiteFooter";
 
 interface ProductData {
   id: string;
@@ -12,6 +14,10 @@ interface ProductData {
   origin: string;
   edition: string;
   perspectives: string[];
+  fabric: string;
+  fit: string;
+  care: string;
+  notes: string[];
 }
 
 const mockProducts: Record<string, ProductData> = {
@@ -29,7 +35,11 @@ const mockProducts: Record<string, ProductData> = {
     perspectives: [
       "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=600&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600&auto=format&fit=crop"
-    ]
+    ],
+    fabric: "Double-faced Italian cashmere with hand-set seams.",
+    fit: "Relaxed shoulder, longline body, structured enough for tailoring.",
+    care: "Brush between wears. Dry clean only when necessary.",
+    notes: ["Horn button closure", "Unlined interior", "Hand-finished collar"]
   },
   "prod-2": {
     id: "prod-2",
@@ -45,7 +55,11 @@ const mockProducts: Record<string, ProductData> = {
     perspectives: [
       "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=600&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=600&auto=format&fit=crop"
-    ]
+    ],
+    fabric: "Dry-handle worsted wool selected for clean drape.",
+    fit: "Mid-rise with a straight leg and a quietly structured break.",
+    care: "Steam to release creases. Dry clean sparingly.",
+    notes: ["Pressed front crease", "Hidden adjustable waistband", "Double-stitched hem"]
   },
   "prod-3": {
     id: "prod-3",
@@ -61,7 +75,11 @@ const mockProducts: Record<string, ProductData> = {
     perspectives: [
       "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=600&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=600&auto=format&fit=crop"
-    ]
+    ],
+    fabric: "Long-staple organic cotton in dense loopback knit.",
+    fit: "Boxy through the body with a stable rib collar and cuffs.",
+    care: "Cold wash inside out. Lay flat to dry.",
+    notes: ["Garment-dyed finish", "Reinforced neck tape", "Dense rib trims"]
   },
   "prod-4": {
     id: "prod-4",
@@ -76,7 +94,11 @@ const mockProducts: Record<string, ProductData> = {
     perspectives: [
       "https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=600&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1582562124811-c09040d0a901?q=80&w=600&auto=format&fit=crop"
-    ]
+    ],
+    fabric: "Fourteen-ounce Japanese selvedge denim with solid brass hardware.",
+    fit: "Straight leg with room through the thigh and a raw unfinished hem.",
+    care: "Wear often before the first wash. Wash cold, hang dry.",
+    notes: ["Raw hem", "Selvedge outseam", "Brass rivets"]
   },
   "prod-5": {
     id: "prod-5",
@@ -92,7 +114,11 @@ const mockProducts: Record<string, ProductData> = {
     perspectives: [
       "https://images.unsplash.com/photo-1516257984-b1b4d707412e?q=80&w=600&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1617137968427-85924c800a22?q=80&w=600&auto=format&fit=crop"
-    ]
+    ],
+    fabric: "Soft cashmere cloth with an unlined, shirt-jacket construction.",
+    fit: "Easy drop shoulder with room for a fine knit underneath.",
+    care: "Air between wears. Fold, do not hang, for storage.",
+    notes: ["Twin utility pockets", "Clean horn buttons", "Unlined interior"]
   }
 };
 
@@ -104,6 +130,9 @@ export default async function ProductDetailPage({
   const { id } = await params;
   // Fallback to prod-1 if ID is not recognized
   const product = mockProducts[id] || mockProducts["prod-1"];
+  const relatedProducts = Object.values(mockProducts)
+    .filter((item) => item.id !== product.id)
+    .slice(0, 3);
 
   return (
     <div className="product-page">
@@ -150,23 +179,7 @@ export default async function ProductDetailPage({
             
             <p className="prod-details__description">{product.description}</p>
 
-            <div className="prod-details__size-section">
-              <div className="prod-details__size-header">
-                <span>SELECT SIZE</span>
-                <button className="prod-details__size-guide">SIZE GUIDE</button>
-              </div>
-
-              <div className="prod-details__size-grid">
-                {product.sizes.map((size, index) => (
-                  <button 
-                    key={size} 
-                    className={`prod-details__size-btn ${index === 0 ? "active" : ""}`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <ProductSizePicker sizes={product.sizes} />
 
             <button className="prod-details__atb-btn">
               ADD TO BAG
@@ -207,11 +220,72 @@ export default async function ProductDetailPage({
         </div>
         <div className="prod-philosophy__media">
           <img 
-            src="https://images.unsplash.com/photo-1558271881-4828f3a3c9b6?q=80&w=800&auto=format&fit=crop" 
+            src="/assets/3a79aa51-9037-4ef6-a02b-03d23e7bc7f1.jpg" 
             alt="Tailoring craftsmanship" 
           />
         </div>
       </section>
+
+      <section className="prod-craft">
+        <div className="prod-craft__intro">
+          <span className="prod-philosophy__label">THE MAKE</span>
+          <h2>Construction you feel after the first year.</h2>
+        </div>
+        <div className="prod-craft__grid">
+          <article className="prod-craft__panel prod-craft__panel--wide">
+            <span>FABRIC</span>
+            <p>{product.fabric}</p>
+          </article>
+          <article className="prod-craft__panel">
+            <span>FIT</span>
+            <p>{product.fit}</p>
+          </article>
+          <article className="prod-craft__panel">
+            <span>CARE</span>
+            <p>{product.care}</p>
+          </article>
+        </div>
+      </section>
+
+      <section className="prod-archive">
+        <div className="prod-archive__media">
+          <img src={product.perspectives[0]} alt={`${product.title} detail`} />
+        </div>
+        <div className="prod-archive__content">
+          <span className="prod-philosophy__label">ARCHIVE NOTES</span>
+          <h2>{product.edition}</h2>
+          <ul>
+            {product.notes.map((note) => (
+              <li key={note}>{note}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section className="prod-related">
+        <div className="prod-related__header">
+          <span className="prod-philosophy__label">COMPLETE THE FOUNDATION</span>
+          <h2>Considered with this piece.</h2>
+        </div>
+        <div className="prod-related__grid">
+          {relatedProducts.map((item) => (
+            <Link href={`/product/${item.id}`} className="prod-related__card" key={item.id}>
+              <div className="prod-related__image">
+                <img src={item.src} alt={item.title} />
+              </div>
+              <div className="prod-related__meta">
+                <div>
+                  <h3>{item.title}</h3>
+                  <span>{item.sub}</span>
+                </div>
+                <strong>{item.price}</strong>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <SiteFooter />
     </div>
   );
 }

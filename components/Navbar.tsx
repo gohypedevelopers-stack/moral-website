@@ -7,7 +7,6 @@ import Link from "next/link";
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-  const isHome = pathname === "/";
   const isProductPage = pathname.startsWith("/product");
 
   useEffect(() => {
@@ -21,10 +20,10 @@ export default function Navbar() {
   }, [pathname]);
 
   const navLinks = [
-    { label: "Shop", hash: "collection" },
-    { label: "About", hash: "philosophy" },
-    { label: "Campaign", hash: "campaign" },
-    { label: "Journal", hash: "community" },
+    { label: "Shop", href: "/shop" },
+    { label: "About", href: "/about" },
+    { label: "Campaign", href: "/campaign" },
+    { label: "Journal", href: "/journal" },
   ];
 
   return (
@@ -35,7 +34,7 @@ export default function Navbar() {
         </Link>
         <nav className="nav__links">
           {navLinks.map((link) => (
-            <Link key={link.hash} href={isHome ? `#${link.hash}` : `/#${link.hash}`}>
+            <Link key={link.href} href={link.href}>
               {link.label}
             </Link>
           ))}
@@ -58,10 +57,10 @@ export default function Navbar() {
       </header>
 
       <div className="drawer" id="drawer">
-        {navLinks.concat({ label: "Newsletter", hash: "news" }).map((link, index) => (
+        {navLinks.concat({ label: "Newsletter", href: "/newsletter" }).map((link, index) => (
           <Link
-            key={link.hash}
-            href={isHome ? `#${link.hash}` : `/#${link.hash}`}
+            key={link.href}
+            href={link.href}
             onClick={() => setMenuOpen(false)}
             style={{ transitionDelay: `${0.18 + index * 0.06}s` }}
           >

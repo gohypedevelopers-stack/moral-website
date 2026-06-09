@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import SiteFooter from "@/components/SiteFooter";
 
 const products = [
   {
@@ -684,49 +685,7 @@ export default function Home() {
           </div>
         </section>
 
-        <footer className="footer" data-screen-label="Footer">
-          <div className="footer__top">
-            <div className="footer__brand">
-              <img className="footer__logo" src="/assets/81783374-d384-4d9a-9e94-6c2b3eeef1aa.png" alt="MORAL" />
-              <p>Built on conviction. Designed for permanence. Worn with intention.</p>
-            </div>
-            <div className="footer__col">
-              <h5>Shop</h5>
-              <ul>
-                <li><a href="#">New Arrivals</a></li>
-                <li><a href="#">Men</a></li>
-                <li><a href="#">Women</a></li>
-                <li><a href="#">Limited Edition</a></li>
-              </ul>
-            </div>
-            <div className="footer__col">
-              <h5>Company</h5>
-              <ul>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Sustainability</a></li>
-                <li><a href="#">Journal</a></li>
-                <li><a href="#">Contact</a></li>
-              </ul>
-            </div>
-            <div className="footer__col">
-              <h5>Connect</h5>
-              <ul>
-                <li><a href="#">Instagram</a></li>
-                <li><a href="#">TikTok</a></li>
-                <li><a href="#">Pinterest</a></li>
-                <li><a href="#">Newsletter</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="footer__bottom">
-            <span>© MMXXVI MORAL. All rights reserved.</span>
-            <div style={{ display: "flex", gap: "1.5rem" }}>
-              <a href="#">Privacy</a>
-              <a href="#">Terms</a>
-              <a href="#">Shipping</a>
-            </div>
-          </div>
-        </footer>
+        <SiteFooter />
       </main>
     </>
   );
