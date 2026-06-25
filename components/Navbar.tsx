@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useCart } from "@/components/CartProvider";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const isProductPage = pathname.startsWith("/product");
+  const { cartCount, checkoutUrl } = useCart();
 
   useEffect(() => {
     document.body.classList.toggle("menu-open", menuOpen);
@@ -40,9 +42,15 @@ export default function Navbar() {
           ))}
         </nav>
         <div className="nav__right">
-          <a className="nav__cart" href="#">
-            Cart (0)
-          </a>
+          {checkoutUrl ? (
+            <a className="nav__cart" href={checkoutUrl}>
+              Cart ({cartCount})
+            </a>
+          ) : (
+            <span className="nav__cart">
+              Cart ({cartCount})
+            </span>
+          )}
           <button
             className="burger"
             id="burger"
