@@ -145,17 +145,60 @@ export async function getProductByHandle(handle: string) {
   };
 }
 
+const cartFragment = `
+  fragment cartDetails on Cart {
+    id
+    checkoutUrl
+    totalQuantity
+    cost {
+      subtotalAmount {
+        amount
+        currencyCode
+      }
+    }
+    lines(first: 100) {
+      edges {
+        node {
+          id
+          quantity
+          merchandise {
+            ... on ProductVariant {
+              id
+              title
+              product {
+                title
+                handle
+                images(first: 1) {
+                  edges {
+                    node {
+                      url
+                      altText
+                    }
+                  }
+                }
+              }
+              price {
+                amount
+                currencyCode
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export async function createCart(variantId: string) {
   const query = `
     mutation createCart($cartInput: CartInput) {
       cartCreate(input: $cartInput) {
         cart {
-          id
-          checkoutUrl
-          totalQuantity
+          ...cartDetails
         }
       }
     }
+    ${cartFragment}
   `;
   const variables = {
     cartInput: {
@@ -171,12 +214,11 @@ export async function addToCart(cartId: string, variantId: string) {
     mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
       cartLinesAdd(cartId: $cartId, lines: $lines) {
         cart {
-          id
-          checkoutUrl
-          totalQuantity
+          ...cartDetails
         }
       }
     }
+    ${cartFragment}
   `;
   const variables = {
     cartId,
@@ -186,17 +228,60 @@ export async function addToCart(cartId: string, variantId: string) {
   return response.body?.data?.cartLinesAdd?.cart;
 }
 
+export async function removeFromCart(cartId: string, lineIds: string[]) {
+  const query = `
+    mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+      cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+        cart {
+          ...cartDetails
+        }
+      }
+    }
+    ${cartFragment}
+  `;
+  const variables = {
+    cartId,
+    lineIds
+  };
+  const response = await shopifyFetch({ query, variables });
+  return response.body?.data?.cartLinesRemove?.cart;
+}
+
 export async function getCart(cartId: string) {
   const query = `
     query getCart($cartId: ID!) {
       cart(id: $cartId) {
-        id
-        checkoutUrl
-        totalQuantity
+        ...cartDetails
       }
     }
+    ${cartFragment}
   `;
   const variables = { cartId };
   const response = await shopifyFetch({ query, variables });
   return response.body?.data?.cart;
+}
+
+export async function getHeroVideoUrl() {
+  const query = `
+    query getHeroVideo {
+      node(id: "gid://shopify/Video/32919002480822") {
+        ... on Video {
+          sources {
+            url
+          }
+        }
+      }
+    }
+  `;
+
+  const response = await shopifyFetch({ query });
+  
+  const sources = response.body?.data?.node?.sources || [];
+  const mp4Sources = sources.filter((s: any) => s.url.endsWith('.mp4'));
+  if (mp4Sources.length > 0) {
+    const hdSource = mp4Sources.find((s: any) => s.url.includes('1080p')) || mp4Sources[0];
+    return hdSource.url;
+  }
+  
+  return null;
 }

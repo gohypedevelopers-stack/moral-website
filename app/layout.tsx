@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Luxury fashion homepage for MORAL.",
 };
 
+import CartDrawer from "@/components/CartDrawer";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -19,6 +21,7 @@ export default function RootLayout({
         <CartProvider>
           <Navbar />
           {children}
+          <CartDrawer />
         </CartProvider>
       </body>
     </html>

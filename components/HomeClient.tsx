@@ -3,9 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import SiteFooter from "@/components/SiteFooter";
+import { useCart } from "@/components/CartProvider";
 
 type Product = {
   id: string;
+  variantId?: string;
   tag?: string;
   title: string;
   sub: string;
@@ -98,10 +100,12 @@ const features = [
 interface HomeClientProps {
   products: Product[];
   allProducts: Product[];
+  heroVideoUrl?: string | null;
 }
 
-export default function HomeClient({ products, allProducts }: HomeClientProps) {
+export default function HomeClient({ products, allProducts, heroVideoUrl }: HomeClientProps) {
   const [newsSubmitted, setNewsSubmitted] = useState(false);
+  const { addItemToCart } = useCart();
 
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const wingLRef = useRef<HTMLImageElement>(null);
@@ -358,7 +362,7 @@ export default function HomeClient({ products, allProducts }: HomeClientProps) {
               preload="auto"
               poster="/assets/986cede8-697d-415b-95e4-c54ffff14fa5.png"
             >
-              <source src="Moral 1x.mp4" type="video/mp4" />
+              <source src={heroVideoUrl || "Moral 1x.mp4"} type="video/mp4" />
             </video>
             <div className="hero__veil" />
             <div ref={heroTagRef} className="hero__scroll-indicator" id="heroTag">
@@ -398,7 +402,17 @@ export default function HomeClient({ products, allProducts }: HomeClientProps) {
                     <span className="price">{product.price}</span>
                   </div>
                 </Link>
-                <button className="card__atc" aria-label={`Add ${product.title} to cart`}>
+                <button 
+                  className="card__atc" 
+                  aria-label={`Add ${product.title} to cart`}
+                  onClick={() => {
+                    if (product.variantId) {
+                      addItemToCart(product.variantId);
+                    } else {
+                      console.error("No variant ID for product", product);
+                    }
+                  }}
+                >
                   Add to Cart
                 </button>
               </article>
@@ -483,7 +497,17 @@ export default function HomeClient({ products, allProducts }: HomeClientProps) {
                     <span className="price">{product.price}</span>
                   </div>
                 </Link>
-                <button className="card__atc" aria-label={`Add ${product.title} to cart`}>
+                <button 
+                  className="card__atc" 
+                  aria-label={`Add ${product.title} to cart`}
+                  onClick={() => {
+                    if (product.variantId) {
+                      addItemToCart(product.variantId);
+                    } else {
+                      console.error("No variant ID for product", product);
+                    }
+                  }}
+                >
                   Add to Cart
                 </button>
               </article>

@@ -9,7 +9,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const isProductPage = pathname.startsWith("/product");
-  const { cartCount, checkoutUrl } = useCart();
+  const { cartCount, setIsCartOpen } = useCart();
 
   useEffect(() => {
     document.body.classList.toggle("menu-open", menuOpen);
@@ -42,15 +42,9 @@ export default function Navbar() {
           ))}
         </nav>
         <div className="nav__right">
-          {checkoutUrl ? (
-            <a className="nav__cart" href={checkoutUrl}>
-              Cart ({cartCount})
-            </a>
-          ) : (
-            <span className="nav__cart">
-              Cart ({cartCount})
-            </span>
-          )}
+          <button className="nav__cart" onClick={() => setIsCartOpen(true)}>
+            Cart ({cartCount})
+          </button>
           <button
             className="burger"
             id="burger"
