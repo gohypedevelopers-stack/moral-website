@@ -658,7 +658,6 @@ image-slot {
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   user-select: none;
-  touch-action: pan-x;
   cursor: grab;
 }
 
