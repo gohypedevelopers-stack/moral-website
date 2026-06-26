@@ -567,7 +567,7 @@ export default function HomeClient({ products, allProducts, heroVideoUrl }: Home
           <div className="community__head reveal">
             <span className="label">@MORAL</span>
             <h2>The MORAL Community</h2>
-            <a href="#">Follow on Instagram</a>
+            <a href="https://www.instagram.com/moral_nyc?igsh=bGdnbDM4MmdtNDVv">Follow on Instagram</a>
           </div>
           <div className="gram">
             {community.map((src, index) => (
