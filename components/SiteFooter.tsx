@@ -27,7 +27,7 @@ export default function SiteFooter() {
         <div className="footer__col">
           <h5>Connect</h5>
           <ul>
-            <li><a href="#">Instagram</a></li>
+            <li><a href="https://www.instagram.com/moral_nyc?igsh=bGdnbDM4MmdtNDVv">Instagram</a></li>
             <li><a href="#">TikTok</a></li>
             <li><a href="#">Pinterest</a></li>
             <li><a href="/newsletter">Newsletter</a></li>
