@@ -36,7 +36,7 @@ export default function Navbar() {
         </Link>
         <nav className="nav__links">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href}>
+            <Link key={link.label} href={link.href}>
               {link.label}
             </Link>
           ))}
@@ -61,7 +61,7 @@ export default function Navbar() {
       <div className="drawer" id="drawer">
         {navLinks.concat({ label: "Newsletter", href: "/newsletter" }).map((link, index) => (
           <Link
-            key={link.href}
+            key={link.label}
             href={link.href}
             onClick={() => setMenuOpen(false)}
             style={{ transitionDelay: `${0.18 + index * 0.06}s` }}
