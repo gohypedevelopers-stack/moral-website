@@ -2191,7 +2191,7 @@ image-slot.filled-stock::part(image) {
   }
 }
 
-\.prod-related__atc {
+.prod-related__atc {
   display: block;
   width: 100%;
   margin: 0.4rem 0 0;
