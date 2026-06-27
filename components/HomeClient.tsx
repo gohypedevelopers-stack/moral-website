@@ -106,6 +106,22 @@ interface HomeClientProps {
 export default function HomeClient({ products, allProducts, heroVideoUrl }: HomeClientProps) {
   const [newsSubmitted, setNewsSubmitted] = useState(false);
   const { addItemToCart } = useCart();
+  const productImages = Array.from(
+    new Map(
+      products
+        .concat(allProducts)
+        .filter((product) => product.src)
+        .map((product) => [product.src, product])
+    ).values()
+  );
+  const staticCommunityImages: Product[] = community.map((src, index) => ({
+    id: `community-${index}`,
+    title: "MORAL community",
+    sub: "@MORAL",
+    price: "",
+    src,
+  }));
+  const communityImages = productImages.concat(staticCommunityImages).slice(0, 6);
 
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const wingLRef = useRef<HTMLImageElement>(null);
@@ -115,77 +131,80 @@ export default function HomeClient({ products, allProducts, heroVideoUrl }: Home
   const railRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const rail = railRef.current;
-    if (!rail) return;
+    const rails = Array.from(document.querySelectorAll<HTMLElement>("[data-drag-scroll]"));
+    if (!rails.length) return;
 
-    let isDown = false;
-    let startX = 0;
-    let scrollLeft = 0;
-    let hasMoved = false;
+    const cleanups = rails.map((rail) => {
+      let isDown = false;
+      let startX = 0;
+      let scrollLeft = 0;
+      let hasMoved = false;
 
-    const handlePointerDown = (e: PointerEvent) => {
-      isDown = true;
-      rail.classList.add("dragging");
-      startX = e.pageX - rail.offsetLeft;
-      scrollLeft = rail.scrollLeft;
-      hasMoved = false;
-    };
+      const handlePointerDown = (e: PointerEvent) => {
+        isDown = true;
+        rail.classList.add("dragging");
+        startX = e.pageX - rail.offsetLeft;
+        scrollLeft = rail.scrollLeft;
+        hasMoved = false;
+      };
 
-    const handlePointerLeave = () => {
-      isDown = false;
-      rail.classList.remove("dragging");
-    };
+      const handlePointerLeave = () => {
+        isDown = false;
+        rail.classList.remove("dragging");
+      };
 
-    const handlePointerUp = (e: PointerEvent) => {
-      isDown = false;
-      rail.classList.remove("dragging");
-      try {
-        if (rail.hasPointerCapture?.(e.pointerId)) {
-          rail.releasePointerCapture?.(e.pointerId);
+      const handlePointerUp = (e: PointerEvent) => {
+        isDown = false;
+        rail.classList.remove("dragging");
+        try {
+          if (rail.hasPointerCapture?.(e.pointerId)) {
+            rail.releasePointerCapture?.(e.pointerId);
+          }
+        } catch (err) {}
+      };
+
+      const handlePointerMove = (e: PointerEvent) => {
+        if (!isDown) return;
+        const x = e.pageX - rail.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        if (Math.abs(walk) > 4) {
+          if (!hasMoved) {
+            hasMoved = true;
+            try {
+              rail.setPointerCapture?.(e.pointerId);
+            } catch (err) {}
+          }
+          e.preventDefault();
+          rail.scrollLeft = scrollLeft - walk;
         }
-      } catch (err) {}
-    };
+      };
 
-    const handlePointerMove = (e: PointerEvent) => {
-      if (!isDown) return;
-      const x = e.pageX - rail.offsetLeft;
-      const walk = (x - startX) * 1.5;
-      if (Math.abs(walk) > 4) {
-        if (!hasMoved) {
-          hasMoved = true;
-          try {
-            rail.setPointerCapture?.(e.pointerId);
-          } catch (err) {}
+      const handlePreventClick = (e: MouseEvent) => {
+        if (hasMoved) {
+          e.preventDefault();
+          e.stopPropagation();
         }
-        e.preventDefault();
-        rail.scrollLeft = scrollLeft - walk;
-      }
-    };
+      };
 
-    const handlePreventClick = (e: MouseEvent) => {
-      if (hasMoved) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    };
+      rail.addEventListener("pointerdown", handlePointerDown);
+      rail.addEventListener("pointerleave", handlePointerLeave);
+      rail.addEventListener("pointerup", handlePointerUp);
+      rail.addEventListener("pointercancel", handlePointerUp);
+      rail.addEventListener("pointermove", handlePointerMove);
+      rail.addEventListener("click", handlePreventClick, true);
 
-    rail.addEventListener("pointerdown", handlePointerDown);
-    rail.addEventListener("pointerleave", handlePointerLeave);
-    rail.addEventListener("pointerup", handlePointerUp);
-    rail.addEventListener("pointercancel", handlePointerUp);
-    rail.addEventListener("pointermove", handlePointerMove);
-    rail.addEventListener("click", handlePreventClick, true);
+      return () => {
+        rail.removeEventListener("pointerdown", handlePointerDown);
+        rail.removeEventListener("pointerleave", handlePointerLeave);
+        rail.removeEventListener("pointerup", handlePointerUp);
+        rail.removeEventListener("pointercancel", handlePointerUp);
+        rail.removeEventListener("pointermove", handlePointerMove);
+        rail.removeEventListener("click", handlePreventClick, true);
+      };
+    });
 
-    return () => {
-      rail.removeEventListener("pointerdown", handlePointerDown);
-      rail.removeEventListener("pointerleave", handlePointerLeave);
-      rail.removeEventListener("pointerup", handlePointerUp);
-      rail.removeEventListener("pointercancel", handlePointerUp);
-      rail.removeEventListener("pointermove", handlePointerMove);
-      rail.removeEventListener("click", handlePreventClick, true);
-    };
+    return () => cleanups.forEach((cleanup) => cleanup());
   }, []);
-
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "/assets/image-slot.js";
@@ -385,7 +404,7 @@ export default function HomeClient({ products, allProducts, heroVideoUrl }: Home
             </div>
             <span className="label rail__hint">Drag → to explore</span>
           </div>
-          <div className="rail" id="rail" ref={railRef}>
+          <div className="rail" id="rail" ref={railRef} data-drag-scroll>
             <div className="rail__spacer" />
             {products.map((product) => (
               <article key={product.id} className="card">
@@ -481,7 +500,7 @@ export default function HomeClient({ products, allProducts, heroVideoUrl }: Home
               </h2>
             </div>
           </div>
-          <div className="all-products__grid">
+          <div className="all-products__grid" data-drag-scroll>
             {allProducts.map((product) => (
               <article key={product.id} className="card">
                 <Link href={`/product/${product.id}`} className="card__link">
@@ -570,10 +589,14 @@ export default function HomeClient({ products, allProducts, heroVideoUrl }: Home
             <a href="https://www.instagram.com/moral_nyc?igsh=bGdnbDM4MmdtNDVv">Follow on Instagram</a>
           </div>
           <div className="gram">
-            {community.map((src, index) => (
-              <div key={src} className="gram__cell">
-                <image-slot id={`ig-${index + 1}`} className="filled-stock" src={src} placeholder="@"></image-slot>
-              </div>
+            {communityImages.map((item, index) => (
+              <Link
+                key={`${item.id}-${index}`}
+                href={item.id.startsWith("community-") ? "#community" : `/product/${item.id}`}
+                className="gram__cell"
+              >
+                <image-slot id={`ig-${index + 1}`} className="filled-stock" src={item.src} placeholder={item.title}></image-slot>
+              </Link>
             ))}
           </div>
         </section>
@@ -650,3 +673,4 @@ export default function HomeClient({ products, allProducts, heroVideoUrl }: Home
     </>
   );
 }
+

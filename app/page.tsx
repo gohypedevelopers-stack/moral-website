@@ -8,9 +8,12 @@ export default async function Home() {
   // We'll use the first 5 products for the featured rail, 
   // and the rest for the "All Products" section.
   const featuredProducts = shopifyProducts.slice(0, 5);
-  const allProducts = shopifyProducts.slice(5) || shopifyProducts;
+  const remainingProducts = shopifyProducts.slice(5);
+  const allProducts = remainingProducts.length > 0 ? remainingProducts : shopifyProducts;
 
   return (
     <HomeClient products={featuredProducts} allProducts={allProducts} heroVideoUrl={heroVideoUrl} />
   );
 }
+
+

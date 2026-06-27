@@ -8,7 +8,7 @@ import { useCart } from "@/components/CartProvider";
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-  const isProductPage = pathname.startsWith("/product");
+  const isDarkGlassPage = pathname === "/shop" || pathname.startsWith("/product");
   const { cartCount, setIsCartOpen } = useCart();
 
   useEffect(() => {
@@ -24,13 +24,13 @@ export default function Navbar() {
   const navLinks = [
     { label: "Shop", href: "/shop" },
     { label: "About", href: "/about" },
-    { label: "Campaign", href: "/campaign" },
-    { label: "Journal", href: "/journal" },
+    { label: "Campaign", href: "#" },
+    { label: "Journal", href: "#" },
   ];
 
   return (
     <>
-      <header className={`nav ${isProductPage ? "nav--dark-glass" : ""}`} id="nav">
+      <header className={`nav ${isDarkGlassPage ? "nav--dark-glass" : ""}`} id="nav">
         <Link className="nav__brand" href="/" aria-label="MORAL">
           <img className="nav__logo" src="/assets/81783374-d384-4d9a-9e94-6c2b3eeef1aa.png" alt="MORAL" />
         </Link>

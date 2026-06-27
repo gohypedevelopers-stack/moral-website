@@ -942,7 +942,7 @@ image-slot {
 }
 
 .all-products {
-  padding: var(--section-y) var(--pad-x);
+  padding: var(--section-y) var(--pad-x) clamp(1.25rem, 3vw, 2.5rem);
 }
 
 .all-products h2,
@@ -952,10 +952,25 @@ image-slot {
 }
 
 .all-products__grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
   gap: clamp(1rem, 2.5vw, 2rem);
   margin-top: clamp(2rem, 5vw, 3.5rem);
+  padding-bottom: 0.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  user-select: none;
+  cursor: grab;
+}
+
+.all-products__grid.dragging {
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+  cursor: grabbing;
+}
+
+.all-products__grid::-webkit-scrollbar {
+  display: none;
 }
 
 .campaign {
@@ -1001,7 +1016,7 @@ image-slot {
   display: inline-flex;
   align-items: center;
   gap: 0.7rem;
-  margin-top: 2.4rem;
+  margin-top: 1.4rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   padding-bottom: 0.35rem;
   font-size: var(--fs-label);
@@ -1043,6 +1058,16 @@ image-slot {
   position: relative;
   aspect-ratio: 1;
   overflow: hidden;
+  border-radius: 0;
+  background: transparent;
+}
+
+.gram__cell image-slot::part(frame),
+.gram__cell image-slot::part(ring),
+.gram__cell image-slot::part(image) {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .gram__cell::after {
@@ -1058,7 +1083,7 @@ image-slot {
 }
 
 .news {
-  padding: 0 var(--pad-x) var(--section-y);
+  padding: 0 var(--pad-x) clamp(1.5rem, 4vw, 3rem);
   text-align: center;
 }
 
@@ -1099,7 +1124,7 @@ image-slot {
   display: flex;
   justify-content: center;
   gap: 2.5rem;
-  margin-top: 2.4rem;
+  margin-top: 1.4rem;
   flex-wrap: wrap;
 }
 
@@ -1175,6 +1200,10 @@ image-slot {
 .editorial-page--light {
   background: #ffffff;
   color: #000000;
+}
+
+.editorial-page--light .editorial-hero {
+  padding-top: clamp(4.75rem, 9vw, 7rem);
 }
 
 .editorial-hero {
@@ -1336,6 +1365,10 @@ image-slot {
     min-height: auto;
     padding-top: clamp(6rem, 15vw, 8rem);
     padding-bottom: 2rem;
+  }
+
+  .editorial-page--light .editorial-hero {
+    padding-top: 4.75rem;
   }
 
   .editorial-hero--split,
@@ -1500,6 +1533,7 @@ image-slot.filled-stock::part(image) {
   }
 
   .all-products__grid {
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -1539,6 +1573,7 @@ image-slot.filled-stock::part(image) {
   }
 
   .all-products__grid {
+    display: grid;
     grid-template-columns: 1fr;
     justify-items: center;
   }
@@ -2408,3 +2443,6 @@ image-slot.filled-stock::part(image) {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+
+

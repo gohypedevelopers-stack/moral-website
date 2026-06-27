@@ -19,8 +19,8 @@ export default function SiteFooter() {
           <h5>Company</h5>
           <ul>
             <li><a href="/about">About</a></li>
-            <li><a href="/campaign">Campaign</a></li>
-            <li><a href="/journal">Journal</a></li>
+            <li><a href="#">Campaign</a></li>
+            <li><a href="#">Journal</a></li>
             <li><a href="/newsletter">Newsletter</a></li>
           </ul>
         </div>
