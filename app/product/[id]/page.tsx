@@ -5,6 +5,8 @@ import SiteFooter from "@/components/SiteFooter";
 import AddToCartButton from "@/components/AddToCartButton";
 import { getProductByHandle, getProducts } from "@/lib/shopify";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProductDetailPage({
   params
 }: {

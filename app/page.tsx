@@ -1,6 +1,8 @@
 import HomeClient from "@/components/HomeClient";
 import { getProducts, getHeroVideoUrl } from "@/lib/shopify";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const shopifyProducts = await getProducts();
   const heroVideoUrl = await getHeroVideoUrl();

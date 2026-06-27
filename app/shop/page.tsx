@@ -3,6 +3,8 @@ import SiteFooter from "@/components/SiteFooter";
 import AddToCartButton from "@/components/AddToCartButton";
 import { getProducts } from "@/lib/shopify";
 
+export const dynamic = "force-dynamic";
+
 export default async function ShopPage() {
   const products = await getProducts();
 
