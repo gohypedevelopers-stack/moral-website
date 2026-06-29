@@ -54,13 +54,6 @@ export default async function ProductDetailPage({
         <div className="stage__seam" />
       </div>
 
-      {/* Back to Home Button floating on top */}
-      <Link href="/" className="prod-back-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg>
-        <span>Back to Collection</span>
-      </Link>
 
       <div className="prod-layout">
         {/* Left Side: Dark background with images */}
