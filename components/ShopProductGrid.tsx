@@ -63,20 +63,28 @@ export default function ShopProductGrid({ products }: { products: any[] }) {
               <img src={product.src} alt={product.title} />
             </div>
             <div className="prod-related__meta">
-              <div>
-                <h3>{product.title}</h3>
-                <span>{product.sub}</span>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem", gap: "1rem" }}>
+                <h3 style={{ margin: 0, fontSize: "1.2rem", fontWeight: 400, fontFamily: "var(--font-display)", lineHeight: 1.2 }}>{product.title}</h3>
+                <strong style={{ fontWeight: 400, fontSize: "1rem", whiteSpace: "nowrap" }}>{product.price}</strong>
               </div>
-              <strong>{product.price}</strong>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--ink-light, #666)" }}>
+                  {product.sub}
+                </span>
+                <button
+                  className="prod-related__atc-small"
+                  aria-label={`Choose size for ${product.title}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleCardAdd(product);
+                  }}
+                >
+                  +
+                </button>
+              </div>
             </div>
           </Link>
-          <button
-            className="prod-related__atc"
-            aria-label={`Choose size for ${product.title}`}
-            onClick={() => handleCardAdd(product)}
-          >
-            Add to Cart
-          </button>
           {openSizeProductId === product.id ? (
             <div className="card__sizes" role="radiogroup" aria-label={`Choose size for ${product.title}`}>
               {getProductSizeOptions(product).map((size: any) => (

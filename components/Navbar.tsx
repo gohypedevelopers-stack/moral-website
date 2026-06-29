@@ -159,9 +159,6 @@ export default function Navbar() {
             {collection.title}
           </Link>
         ))}
-        <Link href="/newsletter" onClick={() => setMenuOpen(false)} style={{ transitionDelay: "0.54s" }}>
-          Newsletter
-        </Link>
         <div className="drawer__foot">
           <span>MORAL</span>
           <a href="https://www.instagram.com/moral_nyc?igsh=bGdnbDM4MmdtNDVv" target="_blank" rel="noopener noreferrer">Instagram</a>

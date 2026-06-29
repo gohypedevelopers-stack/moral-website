@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProductSizePicker from "@/components/ProductSizePicker";
+import ShopProductGrid from "@/components/ShopProductGrid";
 import SiteFooter from "@/components/SiteFooter";
 import { getProductByHandle, getProducts } from "@/lib/shopify";
+import ProductGallery from "@/components/ProductGallery";
 
 export const dynamic = "force-dynamic";
 
@@ -43,11 +45,6 @@ export default async function ProductDetailPage({
   const care = "Wear often. Clean only when necessary.";
   const notes = ["Ethical production", "Premium hardware", "Conscience woven into the process"];
 
-  // Perspectives images
-  const mainImage = product.images[0] || product.src;
-  const perspective1 = product.images[1] || mainImage;
-  const perspective2 = product.images[2] || perspective1;
-
   return (
     <div className="product-page">
       {/* Background Stage mimicry */}
@@ -68,20 +65,7 @@ export default async function ProductDetailPage({
       <div className="prod-layout">
         {/* Left Side: Dark background with images */}
         <div className="prod-layout__left">
-          <div className="prod-gallery">
-            <div className="prod-gallery__main">
-              <img src={mainImage} alt={product.title} />
-            </div>
-            
-            <div className="prod-gallery__details">
-              <div className="prod-gallery__detail-cell">
-                <img src={perspective1} alt={`${product.title} Perspective 1`} />
-              </div>
-              <div className="prod-gallery__detail-cell">
-                <img src={perspective2} alt={`${product.title} Perspective 2`} />
-              </div>
-            </div>
-          </div>
+          <ProductGallery images={product.images || []} title={product.title} fallbackImage={product.src} />
         </div>
 
         {/* Right Side: Light background with details */}
@@ -159,7 +143,7 @@ export default async function ProductDetailPage({
 
       <section className="prod-archive">
         <div className="prod-archive__media">
-          <img src={perspective1} alt={`${product.title} detail`} />
+          <img src={product.images?.[1] || product.src} alt={`${product.title} detail`} />
         </div>
         <div className="prod-archive__content">
           <span className="prod-philosophy__label">ARCHIVE NOTES</span>
@@ -178,20 +162,7 @@ export default async function ProductDetailPage({
           <h2>Considered with this piece.</h2>
         </div>
         <div className="prod-related__grid">
-          {relatedProducts.map((item: any) => (
-            <Link href={`/product/${item.id}`} className="prod-related__card" key={item.id}>
-              <div className="prod-related__image">
-                <img src={item.src} alt={item.title} />
-              </div>
-              <div className="prod-related__meta">
-                <div>
-                  <h3>{item.title}</h3>
-                  <span>{item.sub}</span>
-                </div>
-                <strong>{item.price}</strong>
-              </div>
-            </Link>
-          ))}
+          <ShopProductGrid products={relatedProducts} />
         </div>
       </section>
 

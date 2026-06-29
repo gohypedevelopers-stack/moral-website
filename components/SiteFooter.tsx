@@ -36,13 +36,7 @@ export default function SiteFooter() {
               <a href="/about">About</a>
             </li>
             <li>
-              <a href="#">Campaign</a>
-            </li>
-            <li>
               <a href="#">Journal</a>
-            </li>
-            <li>
-              <a href="/newsletter">Newsletter</a>
             </li>
           </ul>
         </div>
@@ -59,9 +53,6 @@ export default function SiteFooter() {
             </li>
             <li>
               <a href="#">Pinterest</a>
-            </li>
-            <li>
-              <a href="/newsletter">Newsletter</a>
             </li>
           </ul>
         </div>

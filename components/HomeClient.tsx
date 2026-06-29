@@ -649,15 +649,15 @@ export default function HomeClient({ products, allProducts, heroVideoUrl, collec
           </div>
           <div className="campaign__veil" />
           <div className="campaign__content reveal">
-            <span className="label">The SS26 Campaign</span>
+            <span className="label">The Permanent Collection</span>
             <h2>
-              Dressed in
+              Discover the
               <br />
-              <span className="italic">conviction.</span>
+              <span className="italic">archive.</span>
             </h2>
-            <a className="cta" href="#">
-              View the Campaign <span>→</span>
-            </a>
+            <Link className="cta" href="/shop">
+              Explore All Products <span>→</span>
+            </Link>
           </div>
         </section>
 
@@ -667,7 +667,7 @@ export default function HomeClient({ products, allProducts, heroVideoUrl, collec
             <h2>The MORAL Community</h2>
             <a href="https://www.instagram.com/moral_nyc?igsh=bGdnbDM4MmdtNDVv">Follow on Instagram</a>
           </div>
-          <div className="gram" style={{ gridTemplateColumns: `repeat(${communityImages.length}, 1fr)` }}>
+          <div className="gram">
             {communityImages.map((item, index) => (
               <Link
                 key={`${item.id}-${index}`}
@@ -680,32 +680,6 @@ export default function HomeClient({ products, allProducts, heroVideoUrl, collec
           </div>
         </section>
 
-        <section className="news" id="news" data-screen-label="Newsletter">
-          <div className="news__inner reveal">
-            <span className="label">The Inner Circle</span>
-            <h2>
-              Join the MORAL
-              <br />
-              Community
-            </h2>
-            <p>
-              Early access to numbered drops, private previews, and the stories behind every
-              collection. No noise — only what matters.
-            </p>
-            <form className="news__form" id="newsForm" onSubmit={handleNewsSubmit}>
-              <input type="email" placeholder="Your email address" required aria-label="Email address" />
-              <button type="submit">Subscribe</button>
-            </form>
-            <div className="news__perks">
-              <span>Exclusive Drops</span>
-              <span>Early Access</span>
-              <span>Member Pricing</span>
-            </div>
-            <div className={`news__msg${newsSubmitted ? " show" : ""}`} id="newsMsg">
-              Welcome to MORAL.
-            </div>
-          </div>
-        </section>
 
         <section className="split" id="philosophy" data-screen-label="Philosophy">
           <div className="split__grid">

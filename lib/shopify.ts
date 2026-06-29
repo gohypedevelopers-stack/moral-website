@@ -262,7 +262,7 @@ export async function getProductByHandle(handle: string) {
             currencyCode
           }
         }
-        images(first: 3) {
+        images(first: 20) {
           edges {
             node {
               url

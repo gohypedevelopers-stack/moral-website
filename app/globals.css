@@ -449,6 +449,16 @@ body.menu-open .burger span:last-child {
   transform: rotate(-45deg);
 }
 
+body.menu-open .nav__links,
+body.menu-open .nav__right {
+  color: #ffffff !important;
+  mix-blend-mode: normal !important;
+}
+
+body.menu-open .burger span {
+  background: #ffffff !important;
+}
+
 .drawer {
   position: fixed;
   inset: 0;
@@ -857,10 +867,9 @@ image-slot {
 
 .card__meta .sub,
 .rail__hint {
-  font-size: var(--fs-label);
+  font-size: 0.85rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  opacity: 0.6;
   white-space: nowrap;
 }
 
@@ -888,7 +897,7 @@ image-slot {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.45rem;
-  margin-top: 0.55rem;
+  margin: 0.55rem 1rem 1.5rem;
   color: #fff;
   mix-blend-mode: difference;
 }
@@ -1199,13 +1208,21 @@ image-slot {
 }
 
 .gram {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   gap: clamp(0.4rem, 1vw, 0.7rem);
   padding: 0 clamp(0.4rem, 1vw, 0.7rem);
 }
 
+.gram::-webkit-scrollbar {
+  display: none;
+}
+
 .gram__cell {
+  flex: 0 0 calc(16.666% - 0.7rem);
+  min-width: 140px;
   position: relative;
   aspect-ratio: 1;
   overflow: hidden;
@@ -1672,9 +1689,6 @@ image-slot.filled-stock::part(image) {
     border-right: 0;
   }
 
-  .gram {
-    grid-template-columns: repeat(3, 1fr);
-  }
 
   .footer__top {
     grid-template-columns: 1fr 1fr;
@@ -1682,6 +1696,10 @@ image-slot.filled-stock::part(image) {
 
   .footer__brand {
     grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
   .all-products__grid {
@@ -1692,9 +1710,13 @@ image-slot.filled-stock::part(image) {
 
 @media (max-width: 560px) {
   .why__grid,
-  .cats__grid,
-  .footer__top {
+  .cats__grid {
     grid-template-columns: 1fr;
+  }
+
+  .statement h2 {
+    text-align: center;
+    font-size: clamp(4.2rem, 15.5vw, 6rem);
   }
 
   .cats__grid {
@@ -1717,11 +1739,16 @@ image-slot.filled-stock::part(image) {
 
   .footer__bottom {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
   }
 
   .card {
     width: min(78vw, 320px);
+  }
+
+  .glyphfield {
+    gap: 0.5rem;
   }
 
   .all-products__grid {
@@ -1828,12 +1855,21 @@ image-slot.filled-stock::part(image) {
 }
 
 .prod-gallery__details {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
   gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+
+.prod-gallery__details::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }
 
 .prod-gallery__detail-cell {
+  flex: 0 0 calc(50% - 0.5rem);
+  scroll-snap-align: start;
   aspect-ratio: 3 / 4;
   overflow: hidden;
   background: #000;
@@ -2278,8 +2314,8 @@ image-slot.filled-stock::part(image) {
 .prod-related__meta {
   padding: 1.2rem 1rem 0.6rem;
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .prod-related__meta h3 {
@@ -2321,9 +2357,14 @@ image-slot.filled-stock::part(image) {
     gap: 1.5rem;
   }
 
-  .prod-craft__grid,
+  .prod-craft__grid {
+    grid-template-columns: 1fr;
+  }
+  
   .prod-related__grid {
     grid-template-columns: 1fr;
+    gap: 3rem;
+    background: transparent;
   }
 
   .prod-craft__panel {
@@ -2341,26 +2382,24 @@ image-slot.filled-stock::part(image) {
   }
 }
 
-.prod-related__atc {
-  display: block;
-  width: 100%;
-  margin: 0.4rem 0 0;
-  padding: 0.8rem 1rem;
-  border: 1px solid var(--ink);
+.prod-related__atc-small {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
   background: transparent;
   color: var(--ink);
-  font-size: var(--fs-label);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  text-align: center;
-  font-weight: 500;
-  transition: background 0.3s var(--ease), color 0.3s var(--ease);
+  font-size: 1.3rem;
   cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  line-height: 1;
 }
 
-.prod-related__atc:hover {
-  background: var(--ink);
-  color: var(--white);
+.prod-related__atc-small:hover {
+  transform: scale(1.2);
 }
 
 /* Cart Drawer */
