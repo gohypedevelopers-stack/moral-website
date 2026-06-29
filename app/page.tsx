@@ -1,11 +1,14 @@
 import HomeClient from "@/components/HomeClient";
-import { getProducts, getHeroVideoUrl } from "@/lib/shopify";
+import { getProducts, getHeroVideoUrl, getCollections } from "@/lib/shopify";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const shopifyProducts = await getProducts();
-  const heroVideoUrl = await getHeroVideoUrl();
+  const [shopifyProducts, heroVideoUrl, collections] = await Promise.all([
+    getProducts(),
+    getHeroVideoUrl(),
+    getCollections(),
+  ]);
   
   // We'll use the first 5 products for the featured rail, 
   // and the rest for the "All Products" section.
@@ -14,7 +17,7 @@ export default async function Home() {
   const allProducts = remainingProducts.length > 0 ? remainingProducts : shopifyProducts;
 
   return (
-    <HomeClient products={featuredProducts} allProducts={allProducts} heroVideoUrl={heroVideoUrl} />
+    <HomeClient products={featuredProducts} allProducts={allProducts} heroVideoUrl={heroVideoUrl} collections={collections} />
   );
 }
 

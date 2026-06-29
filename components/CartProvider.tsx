@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { addCartItem, fetchCart, removeCartItem } from "@/app/actions";
+import { addCartItem, fetchCart, removeCartItem, updateCartItemQuantity } from "@/app/actions";
 
 type CartContextType = {
   cart: any | null;
@@ -10,6 +10,7 @@ type CartContextType = {
   checkoutUrl: string | null;
   addItemToCart: (variantId: string) => Promise<void>;
   removeItemFromCart: (lineId: string) => Promise<void>;
+  updateItemQuantity: (lineId: string, quantity: number) => Promise<void>;
   isLoading: boolean;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
@@ -73,8 +74,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+
+  const updateItemQuantity = async (lineId: string, quantity: number) => {
+    if (!cartId) return;
+    try {
+      const updatedCart = await updateCartItemQuantity(cartId, lineId, quantity);
+      if (updatedCart) {
+        setCart(updatedCart);
+        setCartCount(updatedCart.totalQuantity);
+        setCheckoutUrl(updatedCart.checkoutUrl);
+      }
+    } catch (err) {
+      console.error("Failed to update cart quantity:", err);
+    }
+  };
   return (
-    <CartContext.Provider value={{ cart, cartId, cartCount, checkoutUrl, addItemToCart, removeItemFromCart, isLoading, isCartOpen, setIsCartOpen }}>
+    <CartContext.Provider value={{ cart, cartId, cartCount, checkoutUrl, addItemToCart, removeItemFromCart, updateItemQuantity, isLoading, isCartOpen, setIsCartOpen }}>
       {children}
     </CartContext.Provider>
   );

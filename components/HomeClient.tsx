@@ -5,9 +5,20 @@ import Link from "next/link";
 import SiteFooter from "@/components/SiteFooter";
 import { useCart } from "@/components/CartProvider";
 
+type ProductVariant = {
+  id: string;
+  title?: string;
+  availableForSale?: boolean;
+  selectedOptions?: Array<{
+    name: string;
+    value: string;
+  }>;
+};
+
 type Product = {
   id: string;
   variantId?: string;
+  variants?: ProductVariant[];
   tag?: string;
   title: string;
   sub: string;
@@ -15,27 +26,35 @@ type Product = {
   src: string;
 };
 
-const categories = [
+type CollectionCard = {
+  id: string;
+  title: string;
+  label: string;
+  src: string;
+  href?: string;
+};
+
+const fallbackCategories: CollectionCard[] = [
   {
-    id: "cat-men",
+    id: "men",
     title: "Men",
     label: "Shop the edit",
     src: "https://images.pexels.com/photos/8505246/pexels-photo-8505246.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=800&h=1000",
   },
   {
-    id: "cat-women",
+    id: "women",
     title: "Women",
     label: "Shop the edit",
     src: "https://images.pexels.com/photos/26274786/pexels-photo-26274786.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=800&h=1000",
   },
   {
-    id: "cat-ess",
+    id: "essentials",
     title: "Essentials",
     label: "The foundation",
     src: "https://images.pexels.com/photos/17590615/pexels-photo-17590615.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=800&h=1000",
   },
   {
-    id: "cat-ltd",
+    id: "limited-edition",
     title: "Limited Edition",
     label: "Numbered drops",
     src: "https://images.pexels.com/photos/35587808/pexels-photo-35587808.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=800&h=1000",
@@ -101,10 +120,12 @@ interface HomeClientProps {
   products: Product[];
   allProducts: Product[];
   heroVideoUrl?: string | null;
+  collections?: CollectionCard[];
 }
 
-export default function HomeClient({ products, allProducts, heroVideoUrl }: HomeClientProps) {
+export default function HomeClient({ products, allProducts, heroVideoUrl, collections = [] }: HomeClientProps) {
   const [newsSubmitted, setNewsSubmitted] = useState(false);
+  const [openSizeProductId, setOpenSizeProductId] = useState<string | null>(null);
   const { addItemToCart } = useCart();
   const productImages = Array.from(
     new Map(
@@ -121,7 +142,9 @@ export default function HomeClient({ products, allProducts, heroVideoUrl }: Home
     price: "",
     src,
   }));
-  const communityImages = productImages.concat(staticCommunityImages).slice(0, 6);
+  const communityImages = productImages.slice(0, 6);
+  const categoryCards = collections.filter((collection) => collection.src).slice(0, 4);
+  const visibleCategories = categoryCards.length > 0 ? categoryCards : fallbackCategories;
 
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const wingLRef = useRef<HTMLImageElement>(null);
@@ -345,6 +368,46 @@ export default function HomeClient({ products, allProducts, heroVideoUrl }: Home
 
 
 
+  const getVariantSize = (variant: ProductVariant) => {
+    const sizeOption = variant.selectedOptions?.find(
+      (option) => option.name.toLowerCase() === "size"
+    );
+
+    return sizeOption?.value || variant.title || "Default";
+  };
+
+  const getProductSizeOptions = (product: Product) => {
+    const variants = product.variants?.length
+      ? product.variants
+      : product.variantId
+        ? [{ id: product.variantId, title: "Default", availableForSale: true }]
+        : [];
+
+    return variants.map((variant) => ({
+      label: getVariantSize(variant),
+      variantId: variant.id,
+      availableForSale: variant.availableForSale !== false,
+    }));
+  };
+
+  const handleCardAdd = (product: Product) => {
+    const sizeOptions = getProductSizeOptions(product);
+
+    if (sizeOptions.length <= 1) {
+      const onlyOption = sizeOptions[0];
+      if (onlyOption?.variantId && onlyOption.availableForSale) {
+        addItemToCart(onlyOption.variantId);
+      }
+      return;
+    }
+
+    setOpenSizeProductId((currentId) => (currentId === product.id ? null : product.id));
+  };
+
+  const handleCardSizeAdd = (variantId: string) => {
+    addItemToCart(variantId);
+    setOpenSizeProductId(null);
+  };
   const handleNewsSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setNewsSubmitted(true);
@@ -421,19 +484,27 @@ export default function HomeClient({ products, allProducts, heroVideoUrl }: Home
                     <span className="price">{product.price}</span>
                   </div>
                 </Link>
-                <button 
-                  className="card__atc" 
-                  aria-label={`Add ${product.title} to cart`}
-                  onClick={() => {
-                    if (product.variantId) {
-                      addItemToCart(product.variantId);
-                    } else {
-                      console.error("No variant ID for product", product);
-                    }
-                  }}
+                <button
+                  className="card__atc"
+                  aria-label={`Choose size for ${product.title}`}
+                  onClick={() => handleCardAdd(product)}
                 >
                   Add to Cart
                 </button>
+                {openSizeProductId === product.id ? (
+                  <div className="card__sizes" role="radiogroup" aria-label={`Choose size for ${product.title}`}>
+                    {getProductSizeOptions(product).map((size) => (
+                      <button
+                        key={`${product.id}-${size.label}-${size.variantId}`}
+                        type="button"
+                        disabled={!size.availableForSale}
+                        onClick={() => handleCardSizeAdd(size.variantId)}
+                      >
+                        {size.label}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
               </article>
             ))}
           </div>
@@ -460,16 +531,16 @@ export default function HomeClient({ products, allProducts, heroVideoUrl }: Home
             </span>
           </div>
           <div className="cats__grid">
-            {categories.map((category, index) => (
-              <a key={category.id} className="cat reveal" data-d={index ? String(index) : undefined} href="#">
-                <div className="reframe-wrap" data-parallax="0.06">
+            {visibleCategories.map((category, index) => (
+              <Link key={category.id} className="cat reveal" data-d={index ? String(index) : undefined} href={category.href || `/shop?collection=${category.id}`}>
+                <div className="reframe-wrap">
                   <image-slot id={category.id} className="filled-stock" src={category.src} placeholder={category.title}></image-slot>
                 </div>
                 <div className="cat__overlay">
                   <h3>{category.title}</h3>
                   <span className="label">{category.label}</span>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </section>
@@ -516,19 +587,27 @@ export default function HomeClient({ products, allProducts, heroVideoUrl }: Home
                     <span className="price">{product.price}</span>
                   </div>
                 </Link>
-                <button 
-                  className="card__atc" 
-                  aria-label={`Add ${product.title} to cart`}
-                  onClick={() => {
-                    if (product.variantId) {
-                      addItemToCart(product.variantId);
-                    } else {
-                      console.error("No variant ID for product", product);
-                    }
-                  }}
+                <button
+                  className="card__atc"
+                  aria-label={`Choose size for ${product.title}`}
+                  onClick={() => handleCardAdd(product)}
                 >
                   Add to Cart
                 </button>
+                {openSizeProductId === product.id ? (
+                  <div className="card__sizes" role="radiogroup" aria-label={`Choose size for ${product.title}`}>
+                    {getProductSizeOptions(product).map((size) => (
+                      <button
+                        key={`${product.id}-${size.label}-${size.variantId}`}
+                        type="button"
+                        disabled={!size.availableForSale}
+                        onClick={() => handleCardSizeAdd(size.variantId)}
+                      >
+                        {size.label}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
               </article>
             ))}
           </div>
@@ -588,7 +667,7 @@ export default function HomeClient({ products, allProducts, heroVideoUrl }: Home
             <h2>The MORAL Community</h2>
             <a href="https://www.instagram.com/moral_nyc?igsh=bGdnbDM4MmdtNDVv">Follow on Instagram</a>
           </div>
-          <div className="gram">
+          <div className="gram" style={{ gridTemplateColumns: `repeat(${communityImages.length}, 1fr)` }}>
             {communityImages.map((item, index) => (
               <Link
                 key={`${item.id}-${index}`}

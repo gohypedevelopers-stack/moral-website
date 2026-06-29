@@ -5,7 +5,15 @@ import { useCart } from "@/components/CartProvider";
 import Link from "next/link";
 
 export default function CartDrawer() {
-  const { cart, cartCount, checkoutUrl, isCartOpen, setIsCartOpen, removeItemFromCart } = useCart();
+  const {
+    cart,
+    cartCount,
+    checkoutUrl,
+    isCartOpen,
+    setIsCartOpen,
+    removeItemFromCart,
+    updateItemQuantity,
+  } = useCart();
 
   useEffect(() => {
     if (isCartOpen) {
@@ -18,16 +26,14 @@ export default function CartDrawer() {
     };
   }, [isCartOpen]);
 
-  if (!isCartOpen) return null;
-
   const lines = cart?.lines?.edges || [];
   const subtotal = cart?.cost?.subtotalAmount?.amount || "0.00";
   const currencyCode = cart?.cost?.subtotalAmount?.currencyCode || "USD";
 
   return (
-    <div className="cart-drawer-overlay">
+    <div className={`cart-drawer-overlay${isCartOpen ? " is-open" : ""}`} aria-hidden={!isCartOpen}>
       <div className="cart-drawer-backdrop" onClick={() => setIsCartOpen(false)} />
-      <div className="cart-drawer">
+      <div className="cart-drawer" role="dialog" aria-modal="true" aria-label="Cart">
         <div className="cart-drawer__header">
           <h2>CART ({cartCount})</h2>
           <button className="cart-drawer__close" onClick={() => setIsCartOpen(false)} aria-label="Close cart">
@@ -50,24 +56,39 @@ export default function CartDrawer() {
               {lines.map(({ node }: any) => {
                 const product = node.merchandise.product;
                 const image = product.images.edges[0]?.node;
+                const linePrice = parseFloat(node.merchandise.price.amount) * node.quantity;
 
                 return (
                   <div key={node.id} className="cart-item">
-                    <div className="cart-item__image">
+                    <Link href={`/product/${product.handle}`} onClick={() => setIsCartOpen(false)} className="cart-item__image">
                       {image && <img src={image.url} alt={image.altText || product.title} />}
-                    </div>
+                    </Link>
                     <div className="cart-item__details">
                       <div className="cart-item__title-row">
                         <Link href={`/product/${product.handle}`} onClick={() => setIsCartOpen(false)}>
                           <h3>{product.title}</h3>
                         </Link>
-                        <span className="cart-item__price">
-                          ${parseFloat(node.merchandise.price.amount).toFixed(2)}
-                        </span>
+                        <span className="cart-item__price">${linePrice.toFixed(2)}</span>
                       </div>
                       <p className="cart-item__variant">{node.merchandise.title}</p>
                       <div className="cart-item__actions">
-                        <span className="cart-item__quantity">Qty: {node.quantity}</span>
+                        <div className="cart-item__qty" aria-label={`Quantity for ${product.title}`}>
+                          <button
+                            type="button"
+                            onClick={() => updateItemQuantity(node.id, node.quantity - 1)}
+                            aria-label="Decrease quantity"
+                          >
+                            -
+                          </button>
+                          <span>{node.quantity}</span>
+                          <button
+                            type="button"
+                            onClick={() => updateItemQuantity(node.id, node.quantity + 1)}
+                            aria-label="Increase quantity"
+                          >
+                            +
+                          </button>
+                        </div>
                         <button onClick={() => removeItemFromCart(node.id)} className="cart-item__remove">
                           Remove
                         </button>

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProductSizePicker from "@/components/ProductSizePicker";
 import SiteFooter from "@/components/SiteFooter";
-import AddToCartButton from "@/components/AddToCartButton";
 import { getProductByHandle, getProducts } from "@/lib/shopify";
 
 export const dynamic = "force-dynamic";
@@ -27,8 +26,16 @@ export default async function ProductDetailPage({
     .filter((item: any) => item.id !== product.id)
     .slice(0, 3);
 
+  const sizes = product.variants
+    ?.map((variant: any) => {
+      const sizeOption = variant.selectedOptions?.find(
+        (option: any) => option.name.toLowerCase() === "size"
+      );
+      return sizeOption?.value || variant.title;
+    })
+    .filter(Boolean) || ["S", "M", "L", "XL"];
+
   // Fallbacks for fields not in standard Shopify
-  const sizes = ["S", "M", "L", "XL"];
   const origin = "Hand-finished with integrity.";
   const edition = "Permanent Collection.";
   const fabric = "Premium cloth selected for longevity and drape.";
@@ -86,11 +93,7 @@ export default async function ProductDetailPage({
             
             <p className="prod-details__description">{product.description || "A quiet rebellion against the disposable. Garments built to be kept, considered, and worn with intention."}</p>
 
-            <ProductSizePicker sizes={sizes} />
-
-            <AddToCartButton variantId={product.variantId} className="prod-details__atb-btn">
-              ADD TO BAG
-            </AddToCartButton>
+            <ProductSizePicker sizes={sizes} variants={product.variants} />
 
             <div className="prod-details__shipping-note">
               COMPLIMENTARY WORLDWIDE SHIPPING ON ALL ORDERS.
@@ -127,8 +130,8 @@ export default async function ProductDetailPage({
         </div>
         <div className="prod-philosophy__media">
           <img 
-            src="/assets/3a79aa51-9037-4ef6-a02b-03d23e7bc7f1.jpg" 
-            alt="Tailoring craftsmanship" 
+            src={product.src} 
+            alt={product.title} 
           />
         </div>
       </section>

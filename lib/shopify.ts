@@ -32,6 +32,58 @@ async function shopifyFetch({ query, variables }: { query: string; variables?: a
   }
 }
 
+type ShopifyProductNode = {
+  title: string;
+  handle: string;
+  tags?: string[];
+  productType?: string;
+  priceRange: {
+    minVariantPrice: {
+      amount: string;
+      currencyCode: string;
+    };
+  };
+  images: {
+    edges: Array<{
+      node: {
+        url: string;
+        altText?: string | null;
+      };
+    }>;
+  };
+  variants: {
+    edges: Array<{
+      node: {
+        id: string;
+        title?: string;
+        availableForSale?: boolean;
+        selectedOptions?: Array<{
+          name: string;
+          value: string;
+        }>;
+      };
+    }>;
+  };
+};
+
+function formatProduct(node: ShopifyProductNode) {
+  return {
+    id: node.handle,
+    variantId: node.variants.edges[0]?.node?.id || "",
+    tag: node.tags && node.tags.length > 0 ? node.tags[0] : "",
+    title: node.title,
+    sub: node.productType || "Apparel",
+    price: `$${parseFloat(node.priceRange.minVariantPrice.amount).toFixed(0)}`,
+    src: node.images.edges[0]?.node?.url || "",
+    variants: node.variants.edges.map((edge) => ({
+      id: edge.node.id,
+      title: edge.node.title || "Default",
+      availableForSale: edge.node.availableForSale,
+      selectedOptions: edge.node.selectedOptions || [],
+    })),
+  };
+}
+
 export async function getProducts() {
   const query = `
     query getProducts {
@@ -57,10 +109,16 @@ export async function getProducts() {
                 }
               }
             }
-            variants(first: 1) {
+            variants(first: 100) {
               edges {
                 node {
                   id
+                  title
+                  availableForSale
+                  selectedOptions {
+                    name
+                    value
+                  }
                 }
               }
             }
@@ -74,18 +132,118 @@ export async function getProducts() {
   
   const edges = response.body?.data?.products?.edges || [];
   
-  // Format to match the structure the UI expects
-  return edges.map(({ node }: any) => {
-    return {
-      id: node.handle, // Use handle instead of ID for cleaner URLs
-      variantId: node.variants.edges[0]?.node?.id || "",
-      tag: node.tags && node.tags.length > 0 ? node.tags[0] : "",
-      title: node.title,
-      sub: node.productType || "Apparel",
-      price: `$${parseFloat(node.priceRange.minVariantPrice.amount).toFixed(0)}`,
-      src: node.images.edges[0]?.node?.url || "",
-    };
-  });
+  return edges.map(({ node }: { node: ShopifyProductNode }) => formatProduct(node));
+}
+
+export async function getCollections() {
+  const query = `
+    query getCollections {
+      collections(first: 12) {
+        edges {
+          node {
+            id
+            title
+            handle
+            image {
+              url
+              altText
+            }
+            products(first: 1) {
+              edges {
+                node {
+                  images(first: 1) {
+                    edges {
+                      node {
+                        url
+                        altText
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const response = await shopifyFetch({ query });
+  const edges = response.body?.data?.collections?.edges || [];
+
+  return edges.map(({ node }: any) => ({
+    id: node.handle,
+    title: node.title,
+    label: "Shop the edit",
+    src: node.image?.url || node.products?.edges?.[0]?.node?.images?.edges?.[0]?.node?.url || "",
+    href: `/shop?collection=${encodeURIComponent(node.handle)}`,
+  }));
+}
+
+export async function getProductsByCollection(handle: string) {
+  const query = `
+    query getProductsByCollection($handle: String!) {
+      collection(handle: $handle) {
+        id
+        title
+        handle
+        products(first: 24) {
+          edges {
+            node {
+              id
+              title
+              handle
+              tags
+              productType
+              priceRange {
+                minVariantPrice {
+                  amount
+                  currencyCode
+                }
+              }
+              images(first: 1) {
+                edges {
+                  node {
+                    url
+                    altText
+                  }
+                }
+              }
+              variants(first: 100) {
+                edges {
+                  node {
+                    id
+                    title
+                    availableForSale
+                    selectedOptions {
+                      name
+                      value
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const response = await shopifyFetch({ query, variables: { handle } });
+  const collection = response.body?.data?.collection;
+
+  if (!collection) {
+    return { collection: null, products: [] };
+  }
+
+  return {
+    collection: {
+      id: collection.handle,
+      title: collection.title,
+      handle: collection.handle,
+    },
+    products: collection.products.edges.map(({ node }: { node: ShopifyProductNode }) => formatProduct(node)),
+  };
 }
 
 export async function getProductByHandle(handle: string) {
@@ -112,10 +270,16 @@ export async function getProductByHandle(handle: string) {
             }
           }
         }
-        variants(first: 1) {
+        variants(first: 100) {
           edges {
             node {
               id
+              title
+              availableForSale
+              selectedOptions {
+                name
+                value
+              }
             }
           }
         }
@@ -135,6 +299,12 @@ export async function getProductByHandle(handle: string) {
   return {
     id: product.handle,
     variantId: product.variants.edges[0]?.node?.id || "",
+    variants: product.variants.edges.map((edge: any) => ({
+      id: edge.node.id,
+      title: edge.node.title,
+      availableForSale: edge.node.availableForSale,
+      selectedOptions: edge.node.selectedOptions || [],
+    })),
     tag: product.tags && product.tags.length > 0 ? product.tags[0] : "",
     title: product.title,
     description: product.description,
@@ -247,6 +417,25 @@ export async function removeFromCart(cartId: string, lineIds: string[]) {
   return response.body?.data?.cartLinesRemove?.cart;
 }
 
+
+export async function updateCartLine(cartId: string, lineId: string, quantity: number) {
+  const query = `
+    mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+      cartLinesUpdate(cartId: $cartId, lines: $lines) {
+        cart {
+          ...cartDetails
+        }
+      }
+    }
+    ${cartFragment}
+  `;
+  const variables = {
+    cartId,
+    lines: [{ id: lineId, quantity }],
+  };
+  const response = await shopifyFetch({ query, variables });
+  return response.body?.data?.cartLinesUpdate?.cart;
+}
 export async function getCart(cartId: string) {
   const query = `
     query getCart($cartId: ID!) {
@@ -262,25 +451,35 @@ export async function getCart(cartId: string) {
 }
 
 export async function getHeroVideoUrl() {
+  const heroFileId = "gid://shopify/GenericFile/38844184133853";
+
   const query = `
-    query getHeroVideo {
-      node(id: "gid://shopify/Video/32919002480822") {
+    query getHeroVideo($id: ID!) {
+      node(id: $id) {
         ... on Video {
           sources {
             url
           }
         }
+        ... on GenericFile {
+          url
+        }
       }
     }
   `;
 
-  const response = await shopifyFetch({ query });
+  const response = await shopifyFetch({ query, variables: { id: heroFileId } });
   
   const sources = response.body?.data?.node?.sources || [];
   const mp4Sources = sources.filter((s: any) => s.url.endsWith('.mp4'));
   if (mp4Sources.length > 0) {
     const hdSource = mp4Sources.find((s: any) => s.url.includes('1080p')) || mp4Sources[0];
     return hdSource.url;
+  }
+
+  const fileUrl = response.body?.data?.node?.url;
+  if (typeof fileUrl === "string" && fileUrl.length > 0) {
+    return fileUrl;
   }
   
   return null;
