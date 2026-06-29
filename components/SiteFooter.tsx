@@ -19,13 +19,13 @@ export default function SiteFooter() {
               <a href="/shop">New Arrivals</a>
             </li>
             <li>
-              <a href="/shop">Men</a>
+              <a href="/shop?collection=men">Men</a>
             </li>
             <li>
-              <a href="/shop">Women</a>
+              <a href="/shop?collection=women">Women</a>
             </li>
             <li>
-              <a href="/shop">Limited Edition</a>
+              <a href="/shop?collection=limited-edition">Limited Edition</a>
             </li>
           </ul>
         </div>
