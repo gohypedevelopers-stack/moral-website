@@ -36,7 +36,7 @@ export default function SiteFooter() {
               <a href="/about">About</a>
             </li>
             <li>
-              <a href="#">Journal</a>
+              <a href="/contact">Contact</a>
             </li>
           </ul>
         </div>

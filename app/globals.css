@@ -2680,3 +2680,121 @@ image-slot.filled-stock::part(image) {
   opacity: 0.5;
   cursor: not-allowed;
 }
+/* Contact Page */
+.contact-page .editorial-hero {
+  padding-bottom: 4rem;
+}
+
+.contact-subtitle {
+  max-width: 40rem;
+  margin: 1.5rem auto 0;
+  font-size: 1.25rem;
+  color: var(--grey);
+  line-height: 1.6;
+}
+
+.contact-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 8% 8rem;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .contact-content {
+    grid-template-columns: 1fr;
+    gap: 4rem;
+  }
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  position: sticky;
+  top: 120px;
+}
+
+.contact-info-item p {
+  font-size: 1.15rem;
+  margin-top: 0.5rem;
+  color: var(--ink);
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+  background: transparent;
+  padding: 0;
+  border: none;
+  max-width: 34rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-group label {
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(10, 10, 10, 0.45);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.5rem 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(10, 10, 10, 0.2);
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  color: var(--ink);
+  transition: border-color 0.3s ease;
+  outline: none;
+  border-radius: 0;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--ink);
+  opacity: 0.4;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-bottom-color: var(--ink);
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.contact-submit {
+  align-self: flex-start;
+  margin-top: 1.5rem;
+  padding: 1.25rem 2.5rem;
+  background: var(--ink);
+  color: var(--white);
+  border: none;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.contact-submit:hover {
+  opacity: 0.8;
+}

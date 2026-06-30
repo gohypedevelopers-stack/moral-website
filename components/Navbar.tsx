@@ -93,10 +93,10 @@ export default function Navbar() {
   const navLinks = [
     { label: "Shop", href: "/shop" },
     { label: "About", href: "/about" },
-    { label: "Journal", href: "/journal" },
+    { label: "Contact", href: "/contact" },
   ];
 
-  const isLightPage = pathname === "/shop" || pathname.startsWith("/journal");
+  const isLightPage = pathname === "/shop" || pathname.startsWith("/contact");
 
   return (
     <>
@@ -119,7 +119,7 @@ export default function Navbar() {
             </div>
           </div>
           <Link href="/about">About</Link>
-          <Link href="/journal">Journal</Link>
+          <Link href="/contact">Contact</Link>
         </nav>
         <div className="nav__right">
           <button className="nav__cart" onClick={() => setIsCartOpen(true)}>
