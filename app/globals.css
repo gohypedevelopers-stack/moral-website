@@ -1137,7 +1137,8 @@ image-slot {
   position: relative;
   height: clamp(80vh, 120vh, 130vh);
   overflow: hidden;
-  background: var(--ink);
+  background: #ececec;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1145,12 +1146,39 @@ image-slot {
 
 .campaign__media {
   position: absolute;
-  inset: -12% 0;
-  filter: contrast(1.04) brightness(0.7);
+  inset: 0;
+  background: #ececec !important;
+}
+
+.campaign-bg--mobile {
+  display: none !important;
+}
+
+#campaign-bg::part(frame),
+#campaign-bg-mobile::part(frame) {
+  background: #ececec !important;
+}
+
+@media (max-width: 768px) {
+  .campaign {
+    background: var(--ink) !important;
+  }
+  .campaign__media {
+    background: var(--ink) !important;
+  }
+  #campaign-bg-mobile::part(frame) {
+    background: var(--ink) !important;
+  }
+  .campaign-bg--desktop {
+    display: none !important;
+  }
+  .campaign-bg--mobile {
+    display: block !important;
+  }
 }
 
 .campaign__veil {
-  background: rgba(10, 10, 10, 0.46);
+  display: none;
 }
 
 .campaign__content {
@@ -1158,18 +1186,22 @@ image-slot {
   z-index: 2;
   text-align: center;
   padding: var(--pad-x);
+  color: #ffffff;
+  mix-blend-mode: difference;
 }
 
 .campaign__content .label {
   display: block;
   margin-bottom: 1.4rem;
   opacity: 0.85;
+  color: #ffffff;
 }
 
 .campaign__content h2,
 .news h2 {
   font-size: var(--fs-xl);
   line-height: 0.98;
+  color: #ffffff;
 }
 
 .campaign__content .cta {
@@ -1177,11 +1209,12 @@ image-slot {
   align-items: center;
   gap: 0.7rem;
   margin-top: 1.4rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
   padding-bottom: 0.35rem;
   font-size: var(--fs-label);
   letter-spacing: 0.24em;
   transition: gap 0.4s var(--ease);
+  color: #ffffff;
 }
 
 .campaign__content .cta:hover {
@@ -1823,9 +1856,9 @@ image-slot.filled-stock::part(image) {
   color: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  padding: 4.5rem 4% 4rem;
+  padding: 6.5rem 4% 4rem;
 }
 
 .prod-layout__right {

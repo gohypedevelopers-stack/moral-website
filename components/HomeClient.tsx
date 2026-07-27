@@ -642,8 +642,15 @@ export default function HomeClient({ products, allProducts, heroVideoUrl, collec
           <div className="campaign__media" data-parallax="-0.22">
             <image-slot
               id="campaign-bg"
-              className="filled-stock"
-              src="https://images.pexels.com/photos/29923243/pexels-photo-29923243.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1600&h=1000"
+              className="filled-stock campaign-bg--desktop"
+              src="/ChatGPT Image Jul 27, 2026, 12_50_24 PM.png"
+              placeholder="Drop full-bleed campaign photography"
+              fit="contain"
+            ></image-slot>
+            <image-slot
+              id="campaign-bg-mobile"
+              className="filled-stock campaign-bg--mobile"
+              src="/WhatsApp Image 2026-07-24 at 10.39.47 PM.jpeg"
               placeholder="Drop full-bleed campaign photography"
             ></image-slot>
           </div>
