@@ -20,7 +20,7 @@ export default async function ShopPage({
     ? await getProductsByCollection(selectedCollection)
     : null;
   const products = collectionResult ? collectionResult.products : await getProducts();
-  const pageTitle = collectionResult?.collection?.title || "The Foundation";
+  const pageTitle = collectionResult?.collection?.title || "All Products";
   const pageLabel = collectionResult?.collection ? "Collection" : "Shop";
 
   return (

@@ -63,9 +63,9 @@ export default function ShopProductGrid({ products }: { products: any[] }) {
               <img src={product.src} alt={product.title} />
             </div>
             <div className="prod-related__meta">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem", gap: "1rem" }}>
-                <h3 style={{ margin: 0, fontSize: "1.2rem", fontWeight: 400, fontFamily: "var(--font-display)", lineHeight: 1.2 }}>{product.title}</h3>
-                <strong style={{ fontWeight: 400, fontSize: "1rem", whiteSpace: "nowrap" }}>{product.price}</strong>
+              <div className="prod-related__meta-row">
+                <h3 className="prod-related__title">{product.title}</h3>
+                <strong className="prod-related__price">{product.price}</strong>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--ink-light, #666)" }}>
