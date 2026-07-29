@@ -84,10 +84,10 @@ function formatProduct(node: ShopifyProductNode) {
   };
 }
 
-export async function getProducts() {
+export async function getProducts(first = 250) {
   const query = `
-    query getProducts {
-      products(first: 10) {
+    query getProducts($first: Int!) {
+      products(first: $first) {
         edges {
           node {
             id
@@ -128,7 +128,7 @@ export async function getProducts() {
     }
   `;
 
-  const response = await shopifyFetch({ query });
+  const response = await shopifyFetch({ query, variables: { first } });
   
   const edges = response.body?.data?.products?.edges || [];
   
@@ -180,14 +180,14 @@ export async function getCollections() {
   }));
 }
 
-export async function getProductsByCollection(handle: string) {
+export async function getProductsByCollection(handle: string, first = 250) {
   const query = `
-    query getProductsByCollection($handle: String!) {
+    query getProductsByCollection($handle: String!, $first: Int!) {
       collection(handle: $handle) {
         id
         title
         handle
-        products(first: 24) {
+        products(first: $first) {
           edges {
             node {
               id
@@ -229,7 +229,7 @@ export async function getProductsByCollection(handle: string) {
     }
   `;
 
-  const response = await shopifyFetch({ query, variables: { handle } });
+  const response = await shopifyFetch({ query, variables: { handle, first } });
   const collection = response.body?.data?.collection;
 
   if (!collection) {
